@@ -1,9 +1,11 @@
 local lume = require 'lib.lume'
 
+local w, h = love.graphics.getDimensions()
+
 local shot = {
     radius = 5,
-    speed = 250, -- px/s
-    lifetime = 1, -- seconds
+    speed = 300, -- px/s
+    lifetime = .8, -- seconds
     time = 0,
 }
 
@@ -25,8 +27,8 @@ function shot:die()
 end
 
 function shot:update(dt)
-    self.x = self.x + self.vx * dt
-    self.y = self.y + self.vy * dt
+    self.x = lume.loop(self.x + self.vx * dt, 0, w, self.radius)
+    self.y = lume.loop(self.y + self.vy * dt, 0, h, self.radius)
     self.time = self.time + dt
     if self.time > self.lifetime then
         self:die()

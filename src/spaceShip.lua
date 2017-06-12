@@ -14,12 +14,12 @@ local spaceShip = {
     fy = 0,
     accForce = 200,
     -- rotation physics
-    inertia = 2,
+    inertia = 1,
     angle = 0,
     cos = 1,
     sin = 0,
     omega = 0,
-    maxOmega = 2.5,
+    maxOmega = 3,
     torque = 0,
     accTorque = 30,
     --
