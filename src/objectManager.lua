@@ -15,7 +15,7 @@ manager:set('spaceShip', require 'spaceShip')
 
 -- [TRIGGER]: create a new shot on pressing space bar
 manager:add(
-    require('keyTrigger'):setKey('space'):setAction(function()
+    require('core.keyTrigger'):setKey('space'):setAction(function()
         manager:addShot(require('shot').new(
             manager.objects.spaceShip.x,
             manager.objects.spaceShip.y,

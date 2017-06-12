@@ -146,6 +146,14 @@ function lume.random(a, b)
 end
 
 
+function lume.randomNormal(sigma, mu)
+    -- uses Box-Muller transform
+    sigma = sigma or 1
+    mu = mu or 0
+    return mu + sigma * math.sqrt(-2*math.log(lume.random())) * math.cos(2*math.pi * lume.random())
+end
+
+
 function lume.randomchoice(t)
   return t[math.random(#t)]
 end
@@ -163,6 +171,10 @@ function lume.weightedchoice(t)
     if rnd < v then return k end
     rnd = rnd - v
   end
+end
+
+function lume.noise(x, sigma)
+  return x * lume.randomNormal(sigma, 1)
 end
 
 

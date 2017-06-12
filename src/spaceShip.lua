@@ -4,7 +4,6 @@ local w, h = love.graphics.getDimensions()
 
 local spaceShip = {
     name = 'SpaceShip',
-    radius = 16,
     -- translation physics
     mass = .4,
     x = w/2,
@@ -28,6 +27,7 @@ local spaceShip = {
     healthBar = require('quantityBar').new{initial=10, min=0, max=10},
     image = love.graphics.newImage('assets/img/spaceship.png'),
 }
+spaceShip.radius = spaceShip.image:getWidth()/2
 
 spaceShip.healthBar.getPos = function() return spaceShip.x, spaceShip.y - 40 end
 
@@ -83,6 +83,8 @@ end
 function spaceShip:draw()
     -- draw spaceship
     love.graphics.setColor(255, 255, 255)
+    -- love.graphics.setLineWidth(1)
+    -- love.graphics.circle('line', self.x, self.y, self.radius, 20)
     love.graphics.push()
     love.graphics.translate(self.x, self.y)
     love.graphics.push()

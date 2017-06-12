@@ -4,7 +4,7 @@ local w, h = love.graphics.getDimensions()
 
 local shot = {
     name = 'Shot',
-    radius = 5,
+    radius = 4,
     speed = 300, -- px/s
     lifetime = .8, -- seconds
     time = 0,
@@ -37,7 +37,7 @@ function shot:update(dt)
 end
 
 function shot:draw()
-    love.graphics.setColor(255, 255, 255, lume.lerp(255, 0, (self.time/self.lifetime)^10))
+    love.graphics.setColor(100, 255, 200, lume.lerp(255, 0, (self.time/self.lifetime)^10))
     love.graphics.circle('fill', self.x, self.y, self.radius, 20)
 end
 

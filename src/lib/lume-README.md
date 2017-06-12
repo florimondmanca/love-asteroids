@@ -78,6 +78,12 @@ Returns a random number between `a` and `b`. If only `a` is supplied a number
 between `0` and `a` is returned. If no arguments are supplied a random number
 between `0` and `1` is returned.
 
+#### lume.randomNormal(sigma, mu)
+Returns a random number using a normal distribution of standard deviation `sigma` (default 1) and mean `mu` (default 0).
+
+#### lume.noise(x, sigma)
+Returns `x` multiplied by a gaussian noise of standard deviation `sigma` and mean 1.
+
 #### lume.randomchoice(t)
 Returns a random value from array `t`. If the array is empty an error is
 raised.
