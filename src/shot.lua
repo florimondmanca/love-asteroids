@@ -3,6 +3,7 @@ local lume = require 'lib.lume'
 local w, h = love.graphics.getDimensions()
 
 local shot = {
+    name = 'Shot',
     radius = 5,
     speed = 300, -- px/s
     lifetime = .8, -- seconds
@@ -38,6 +39,13 @@ end
 function shot:draw()
     love.graphics.setColor(255, 255, 255, lume.lerp(255, 0, (self.time/self.lifetime)^10))
     love.graphics.circle('fill', self.x, self.y, self.radius, 20)
+end
+
+function shot:onMessage(m)
+    if m.type == 'die' then
+        self:die()
+        return true
+    end
 end
 
 return shot

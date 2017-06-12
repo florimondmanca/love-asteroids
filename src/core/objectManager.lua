@@ -5,7 +5,8 @@ local CALLBACKS = {'update', 'draw', 'mousepressed', 'mousereleased',
 
 local manager = {
     objects = {},
-    updateActions = {}
+    updateActions = {},
+    messageQueue = require 'core.messageQueue'
 }
 
 -- love2d callbacks
@@ -24,6 +25,7 @@ function manager:update(dt)
     for _, updateAction in ipairs(self.updateActions) do
         updateAction(dt)
     end
+    self.messageQueue:dispatch()
 end
 
 --- registers an object to the manager

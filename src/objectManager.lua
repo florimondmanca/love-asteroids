@@ -34,8 +34,8 @@ manager:addUpdateAction(function()
     for _, asteroid in ipairs(manager.objects.asteroidGroup.objects) do
         for _, shot in ipairs(manager.objects.shotGroup.objects) do
             if circleCollide(shot, asteroid) then
-                shot:die()
-                asteroid:damage(shot)
+                manager.messageQueue:add{from=shot, to=asteroid, type='blowup'}
+                manager.messageQueue:add{from=asteroid, to=shot, type='die'}
             end
         end
     end
