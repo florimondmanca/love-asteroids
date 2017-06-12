@@ -16,6 +16,7 @@ local asteroid = {
     speed = 100, -- px/s
     dieRadius = 10,
     omega = 1,
+    rotation = 0,
 }
 
 function asteroid.new(t)
@@ -42,8 +43,7 @@ function asteroid.newRandom(t)
     t.speed = lume.noise(t.speed or asteroid.speed, .5)
     t.omega = lume.noise(asteroid.omega, .5)
     t.rotation = lume.random(0, 2*math.pi)
-    local a = require('asteroid').new(t)
-    return a
+    return asteroid.new(t)
 end
 
 function asteroid.newRandomAtBorders()
