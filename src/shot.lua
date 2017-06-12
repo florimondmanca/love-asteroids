@@ -20,12 +20,16 @@ function shot.new(x, y, angle)
     return self
 end
 
+function shot:die()
+    require('objectManager'):removeShot(self)
+end
+
 function shot:update(dt)
     self.x = self.x + self.vx * dt
     self.y = self.y + self.vy * dt
     self.time = self.time + dt
     if self.time > self.lifetime then
-        require('objectManager'):remove(self)
+        self:die()
     end
 end
 

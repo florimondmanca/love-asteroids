@@ -22,6 +22,11 @@ function asteroid.new(t)
     return self
 end
 
+function asteroid:damage()
+    require('objectManager'):removeAsteroid(self)
+    -- TODO damage the asteroid : break it in two
+end
+
 function asteroid:update(dt)
     self.x = self.x + self.vx * dt
     self.y = self.y + self.vy * dt
