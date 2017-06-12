@@ -7,25 +7,19 @@ local asteroid = {
     speed = 100, -- px/s
 }
 
-function asteroid.new(x, y, angle, radius, speed)
-    assert(x, 'x required')
-    assert(y, 'y required')
-    assert(angle, 'angle required')
+function asteroid.new(t)
+    assert(t.x, 'x required')
+    assert(t.y, 'y required')
+    assert(t.angle, 'angle required')
     local self = lume.clone(asteroid)
     self.__index = asteroid
-    self.x = x
-    self.y = y
-    self.speed = speed or self.speed
-    self.radius = radius or self.radius
-    self.vx = self.speed * math.cos(angle)
-    self.vy = self.speed * math.sin(angle)
+    self.x = t.x
+    self.y = t.y
+    self.speed = t.speed or self.speed
+    self.radius = t.radius or self.radius
+    self.vx = self.speed * math.cos(t.angle)
+    self.vy = self.speed * math.sin(t.angle)
     return self
-end
-
-function asteroid.newRandom(x, y, angle)
-    local radius = asteroid.radius * (1 + love.math.randomNormal(.2, 0))
-    local speed = asteroid.speed * (1 + love.math.randomNormal(.5, 0))
-    return asteroid.new(x, y, angle, radius, speed)
 end
 
 function asteroid:update(dt)
@@ -40,6 +34,27 @@ function asteroid:draw()
     love.graphics.setColor(255, 255, 255)
     love.graphics.setLineWidth(1)
     love.graphics.circle('line', self.x, self.y, self.radius, 20)
+end
+
+---
+
+function asteroid.newRandomAtBorders()
+    local t = love.math.random()
+    local a0 = love.math.random() * math.pi
+    local a = require('asteroid').new{
+        x=0, y=0,
+        angle=math.pi/16 + math.floor(a0/4) * math.pi/8 + a0,
+        radius=asteroid.radius * (1 + love.math.randomNormal(.2, 0)),
+        speed=asteroid.speed * (1 + love.math.randomNormal(.5, 0))
+    }
+    local r = a.radius
+    local tlerp = {
+        0, (h + 2*r) / (2*w + 2*h + 8*r),
+        1/2, (2*h + w + 6*r) / (2*w + 2*h + 8*r), 1
+    }
+    a.x = lume.multilerp(tlerp, {-r, -r, w + r, w + r, -r}, t)
+    a.y = lume.multilerp(tlerp, {-r, h + r, h + r, -r, -r}, t)
+    return a
 end
 
 return asteroid

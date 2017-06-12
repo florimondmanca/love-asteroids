@@ -73,7 +73,7 @@ end
 function lume.loop(x, min, max, offset)
     min = min - (offset or 0)
     max = max + (offset or 0)
-    return x < min and max + (min - x) or (x > max and min + (max - x) or x)
+    return x < min and max - math.abs(min - x) or (x > max and min + math.abs(max - x) or x)
 end
 
 

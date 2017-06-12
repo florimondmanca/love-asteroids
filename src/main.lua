@@ -1,18 +1,20 @@
 -- main.lua
 
+-- initial config
 love.math.setRandomSeed(os.time())
+love.graphics.setBackgroundColor(40, 45, 55)
 
-love.graphics.setBackgroundColor(30, 35, 45)
-
-
--- define objects
+-------------
+-- Objects --
+-------------
 
 local objectManager = require 'objectManager'
 
+-- player's spaceship
 objectManager:set('spaceShip', require 'spaceShip')
-objectManager:set('shotTrigger', require('keyTrigger'):setKey('space'))
 
 -- create a new shot on pressing space bar
+objectManager:set('shotTrigger', require('keyTrigger'):setKey('space'))
 objectManager.objects.shotTrigger:setAction(function()
     objectManager:add(require('shot').new(
         objectManager.objects.spaceShip.x,
@@ -22,20 +24,24 @@ objectManager.objects.shotTrigger:setAction(function()
 end)
 
 -- create asteroids
-objectManager:set('asteroidManager', require 'asteroidManager')
+local asteroids = objectManager.group()
 for _ = 1, 10 do
-    objectManager.objects.asteroidManager:create()
+    asteroids:add(require('asteroid').newRandomAtBorders())
 end
+objectManager:set('asteroids', asteroids)
 
--- define love2d callbacks
+
+----------------------
+-- Love2d callbacks --
+----------------------
 
 for _, fname in ipairs({
     'update', 'draw', 'mousepressed', 'mousereleased',
     'keypressed', 'keyreleased',
 }) do
     love[fname] = function(...)
-        for _, object in pairs(objectManager.objects) do
-            if object[fname] then object[fname](object, ...) end
+        for _, o in pairs(objectManager.objects) do
+            if o[fname] then o[fname](o, ...) end
         end
     end
 end
