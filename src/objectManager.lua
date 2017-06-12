@@ -35,7 +35,7 @@ manager:addUpdateAction(function()
         for _, shot in ipairs(manager.objects.shotGroup.objects) do
             if circleCollide(shot, asteroid) then
                 shot:die()
-                asteroid:damage()
+                asteroid:damage(shot)
             end
         end
     end

@@ -3,8 +3,9 @@ local lume = require 'lib.lume'
 local w, h = love.graphics.getDimensions()
 
 local asteroid = {
-    radius = 15,
+    radius = 20,
     speed = 100, -- px/s
+    dieRadius = 15,
 }
 
 function asteroid.new(t)
@@ -22,9 +23,24 @@ function asteroid.new(t)
     return self
 end
 
-function asteroid:damage()
+function asteroid:die()
     require('objectManager'):removeAsteroid(self)
-    -- TODO damage the asteroid : break it in two
+end
+
+function asteroid:damage(shot)
+    -- if asteroid is big enough, break it into pieces
+    if self.radius > asteroid.dieRadius then
+        local a = lume.angle(self.x, self.y, shot.x, shot.y)
+        require('objectManager'):addAsteroid(asteroid.new{
+            x = self.x, y = self.y,
+            angle = a + math.pi/2, radius = self.radius/2
+        })
+        require('objectManager'):addAsteroid(asteroid.new{
+            x = self.x, y = self.y,
+            angle = a - math.pi/2, radius = self.radius/2
+        })
+    end
+    self:die()
 end
 
 function asteroid:update(dt)
