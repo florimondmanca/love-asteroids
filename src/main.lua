@@ -1,5 +1,7 @@
 -- main.lua
 
+require 'core.soundManager'
+
 -- initial config
 love.math.setRandomSeed(os.time())
 love.graphics.setBackgroundColor(40, 45, 55)

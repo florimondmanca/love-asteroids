@@ -21,6 +21,7 @@ manager:add(
             manager.objects.spaceShip.y,
             manager.objects.spaceShip.angle
         ))
+        love.audio.play('assets/audio/8-bit-laser.mp3', 'static')
     end)
 )
 
