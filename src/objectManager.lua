@@ -38,6 +38,10 @@ manager:addUpdateAction(function()
                 manager.messageQueue:add{from=asteroid, to=shot, type='die'}
             end
         end
+        if circleCollide(asteroid, manager.objects.spaceShip) then
+            manager.messageQueue:add{from=asteroid, to=manager.objects.spaceShip, type='damage', data=-1}
+            manager.messageQueue:add{from=manager.objects.spaceShip, to=asteroid, type='blowup'}
+        end
     end
 end)
 

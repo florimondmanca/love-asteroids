@@ -3,6 +3,8 @@ local lume = require 'lib.lume'
 local w, h = love.graphics.getDimensions()
 
 local spaceShip = {
+    name = 'SpaceShip',
+    radius = 16,
     -- translation physics
     mass = .4,
     x = w/2,
@@ -23,8 +25,11 @@ local spaceShip = {
     torque = 0,
     accTorque = 30,
     --
+    healthBar = require('quantityBar').new{initial=10, min=0, max=10},
     image = love.graphics.newImage('assets/img/spaceship.png'),
 }
+
+spaceShip.healthBar.getPos = function() return spaceShip.x, spaceShip.y - 40 end
 
 --- adds a force in the cartesian frame of reference
 function spaceShip:addForce(fx, fy)
@@ -76,12 +81,23 @@ function spaceShip:update(dt)
 end
 
 function spaceShip:draw()
+    -- draw spaceship
     love.graphics.setColor(255, 255, 255)
     love.graphics.push()
     love.graphics.translate(self.x, self.y)
+    love.graphics.push()
     love.graphics.rotate(self.angle)
     love.graphics.draw(self.image, -self.image:getWidth()/2, -self.image:getHeight()/2)
     love.graphics.pop()
+    self.healthBar:draw()
+    love.graphics.pop()
+end
+
+function spaceShip:onMessage(m)
+    if m.type == 'damage' then
+        self.healthBar:addQuantity(m.data)
+        return true
+    end
 end
 
 return spaceShip
