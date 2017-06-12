@@ -11,12 +11,12 @@ manager:createGroup('shot')
 manager:createGroup('asteroid')
 
 -- player's spaceship
-manager:set('spaceShip', require 'spaceShip')
+manager:set('spaceShip', require 'entity.spaceShip')
 
 -- [TRIGGER]: create a new shot on pressing space bar
 manager:add(
     require('core.keyTrigger'):setKey('space'):setAction(function()
-        manager:addShot(require('shot').new(
+        manager:addShot(require('entity.shot').new(
             manager.objects.spaceShip.x,
             manager.objects.spaceShip.y,
             manager.objects.spaceShip.angle
@@ -27,7 +27,7 @@ manager:add(
 
 -- create asteroids
 for _ = 1, 10 do
-    manager:addAsteroid(require('asteroid').newRandomAtBorders())
+    manager:addAsteroid(require('entity.asteroid').newRandomAtBorders())
 end
 
 -- update actions

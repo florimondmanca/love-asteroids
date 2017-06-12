@@ -24,7 +24,7 @@ local spaceShip = {
     torque = 0,
     accTorque = 30,
     --
-    healthBar = require('quantityBar').new{initial=10, min=0, max=10},
+    healthBar = require('entity.quantityBar').new{initial=10, min=0, max=10},
     image = love.graphics.newImage('assets/img/spaceship.png'),
 }
 spaceShip.radius = spaceShip.image:getWidth()/2

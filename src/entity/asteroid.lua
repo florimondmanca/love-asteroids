@@ -60,18 +60,18 @@ function asteroid.newRandomAtBorders()
 end
 
 function asteroid:die()
-    require('objectManager'):removeAsteroid(self)
+    require('entity.objectManager'):removeAsteroid(self)
 end
 
 function asteroid:blowup(damager)
     -- if asteroid is big enough, break it into pieces
     if self.radius/2 > asteroid.dieRadius then
         local a = lume.angle(self.x, self.y, damager.x, damager.y)
-        require('objectManager'):addAsteroid(asteroid.newRandom{
+        require('entity.objectManager'):addAsteroid(asteroid.newRandom{
             x = self.x, y = self.y,
             angle = a + math.pi/2, radius = self.radius/2
         })
-        require('objectManager'):addAsteroid(asteroid.newRandom{
+        require('entity.objectManager'):addAsteroid(asteroid.newRandom{
             x = self.x, y = self.y,
             angle = a - math.pi/2, radius = self.radius/2
         })
