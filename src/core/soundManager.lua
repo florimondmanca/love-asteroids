@@ -17,6 +17,7 @@ do
         end
     end
 
+
     -- overwrite love.audio.play to create and register source if needed
     local play = love.audio.play
     function love.audio.play(what, how, loop)
@@ -25,7 +26,6 @@ do
             src = love.audio.newSource(what, how)
             src:setLooping(loop or false)
         end
-
         play(src)
         sources[src] = src
         return src
