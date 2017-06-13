@@ -29,7 +29,13 @@ local spaceShip = {
 }
 spaceShip.radius = spaceShip.image:getWidth()/2
 
-spaceShip.healthBar.getPos = function() return spaceShip.x, spaceShip.y - 40 end
+function spaceShip:resetPos()
+    self.x = w/2
+    self.y = h/2
+    self.vx = 0
+    self.vy = 0
+end
+
 
 --- adds a force in the cartesian frame of reference
 function spaceShip:addForce(fx, fy)
@@ -98,6 +104,13 @@ end
 function spaceShip:onMessage(m)
     if m.type == 'damage' then
         self.healthBar:addQuantity(m.data)
+        if self.healthBar.quantity <= 0 then
+            love.audio.play('assets/audio/playerdead.wav', 'static')
+            self:resetPos()
+            self.healthBar.quantity = self.healthBar.max
+        else
+            love.audio.play('assets/audio/collision.wav', 'static', false, .3)
+        end
         return true
     end
 end
