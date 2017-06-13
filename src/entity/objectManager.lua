@@ -33,7 +33,7 @@ manager:add(
 )
 
 -- create asteroids
-for _ = 1, 10 do
+for _ = 1, 30 do
     manager:addAsteroid(require('entity.asteroid').newRandomAtBorders())
 end
 

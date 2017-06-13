@@ -1,7 +1,6 @@
 -- main.lua
 
 require 'core.soundManager'
-love.audio.play('assets/audio/ost.wav', 'stream', true)
 
 -- initial config
 love.math.setRandomSeed(os.time())
