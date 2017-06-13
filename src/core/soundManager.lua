@@ -20,11 +20,12 @@ do
 
     -- overwrite love.audio.play to create and register source if needed
     local play = love.audio.play
-    function love.audio.play(what, how, loop)
+    function love.audio.play(what, how, loop, volume)
         local src = what
         if type(what) ~= "userdata" or not what:typeOf("Source") then
             src = love.audio.newSource(what, how)
             src:setLooping(loop or false)
+            if volume then src:setVolume(volume) end
         end
         play(src)
         sources[src] = src

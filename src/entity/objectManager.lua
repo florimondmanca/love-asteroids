@@ -1,3 +1,5 @@
+local lume = require 'lib.lume'
+
 local function circleCollide(a, b)
     return (b.x - a.x)^2 + (b.y - a.y)^2 <= (a.radius + b.radius)^2
 end
@@ -16,12 +18,17 @@ manager:set('spaceShip', require 'entity.spaceShip')
 -- [TRIGGER]: create a new shot on pressing space bar
 manager:add(
     require('core.keyTrigger'):setKey('space'):setAction(function()
+        -- add a shot
         manager:addShot(require('entity.shot').new(
             manager.objects.spaceShip.x,
             manager.objects.spaceShip.y,
             manager.objects.spaceShip.angle
         ))
-        love.audio.play('assets/audio/laser.wav', 'static')
+        -- player a laser sound
+        love.audio.play(
+            lume.format('assets/audio/shot{n}.wav',
+            {n=lume.randomchoice{1, 2, 3}}), 'static', false, .4
+        )
     end)
 )
 
