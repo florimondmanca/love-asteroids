@@ -6,7 +6,8 @@ local CALLBACKS = {'update', 'draw', 'mousepressed', 'mousereleased',
 local manager = {
     objects = {},
     updateActions = {},
-    messageQueue = require 'core.messageQueue'
+    messageQueue = require 'core.messageQueue',
+    camera = require('core.camera').new(),
 }
 
 -- love2d callbacks
@@ -18,14 +19,20 @@ for _, fname in ipairs(CALLBACKS) do
     end
 end
 
+local update = manager.update
 function manager:update(dt)
-    for _, o in pairs(self.objects) do
-        if o.update then o.update(o, dt) end
-    end
+    update(self, dt)
     for _, updateAction in ipairs(self.updateActions) do
         updateAction(dt)
     end
     self.messageQueue:dispatch()
+end
+
+local draw = manager.draw
+function manager:draw()
+    self.camera:set()
+    draw(self)
+    self.camera:unset()
 end
 
 --- registers an object to the manager
