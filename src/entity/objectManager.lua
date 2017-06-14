@@ -11,6 +11,7 @@ local manager = require 'core.objectManager'
 -- object groups
 manager:createGroup('shot')
 manager:createGroup('asteroid')
+manager:createGroup('particleSystem')
 
 -- player's spaceship
 manager:set('spaceShip', require 'entity.spaceShip')

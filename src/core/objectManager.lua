@@ -90,12 +90,12 @@ end
 -- manager:removeEnemy(enemy)  -- removes an enemy from the group 'enemy'
 -- manager.objects.enemyGroup.objects  -- access the group's object list
 function manager:createGroup(name)
-    name = string.lower(name)
     local groupName = name .. 'Group'
     -- create the group
     self:set(groupName, manager.group())
     -- create add/remove helper methods
-    local capName = name:gsub("^%l", string.upper)
+    local capName = name:sub(1, 1):upper() .. name:sub(2)
+    print(capName)
     self['add' .. capName] = function(self, o) self:addTo(groupName, o) end
     self['remove' .. capName] = function(self, o) self:removeFrom(groupName, o) end
 end
