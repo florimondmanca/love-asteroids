@@ -15,31 +15,23 @@ local particleImage = love.graphics.newImage('assets/img/particle_triangle.png')
 -- size : 0 (minimal size) - 1 (maximum size)
 local function newParticles(x, y, number, size, angle)
     number = number or 16
-    local ps = {system = love.graphics.newParticleSystem(particleImage, number)}
-    ps.system:setDirection(angle + math.pi)
-    ps.system:setSpread(math.pi/2)
-    ps.system:setSpeed(50, 300)
-    ps.system:setSpin(-5, 5)
-    ps.system:setSpinVariation(1)
-    ps.system:setParticleLifetime(.1, 1)
-    ps.system:setSizes(.04 * size, .02 * size, .001 * size)
-    ps.system:setSizeVariation(1)
-    ps.system:setColors(
-        161, 160, 156, 255,
-        75, 86, 96, 0
-    )
-    function ps:update(dt)
-        ps.system:update(dt)
-        if ps.system:getCount() == 0 then
-            require('entity.objectManager'):removeParticleSystem(ps)
-        end
-    end
-    function ps:draw()
-        love.graphics.setColor(255, 255, 255)
-        love.graphics.draw(ps.system, x, y)
-    end
-    ps.system:emit(number)
-    require('entity.objectManager'):addParticleSystem(ps)
+    return require('entity.particleSystem').new(particleImage, number,
+    function() return x end, function() return y end,
+    function(ps)
+        ps:setParticleLifetime(.1, 1)
+        ps:setDirection(angle + math.pi)
+        ps:setSpread(math.pi/2)
+        ps:setSpeed(50, 300)
+        ps:setSpin(-5, 5)
+        ps:setSpinVariation(1)
+        ps:setSizes(.04 * size, .02 * size, .001 * size)
+        ps:setSizeVariation(1)
+        ps:setColors(
+            161, 160, 156, 255,
+            75, 86, 96, 0
+        )
+        ps:emit(number)
+    end)
 end
 
 

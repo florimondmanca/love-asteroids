@@ -1,13 +1,15 @@
 local lume = require 'lib.lume'
 
 local w, h = love.graphics.getDimensions()
+local particleImage = love.graphics.newImage('assets/img/particle_circle.png')
 
 local shot = {
     name = 'Shot',
-    radius = 4,
-    speed = 300, -- px/s
+    radius = 3,
+    speed = 350, -- px/s
     lifetime = .8, -- seconds
     time = 0,
+    color = {100, 255, 200}
 }
 
 function shot.new(x, y, angle)
@@ -20,11 +22,25 @@ function shot.new(x, y, angle)
     self.y = y
     self.vx = self.speed * math.cos(angle)
     self.vy = self.speed * math.sin(angle)
+    -- self.ps = require('entity.particleSystem').new(particleImage, 128,
+    -- function() return self.x end, function() return self.y end,
+    -- function(ps)
+    --     ps:setEmissionRate(128)
+    --     ps:setParticleLifetime(.1, .5)
+    --     ps:setDirection(angle + math.pi)
+    --     ps:setSpread(math.pi/10)
+    --     ps:setSpeed(200)
+    --     ps:setSizes(.01, .005, .001)
+    --     ps:setSizeVariation(1)
+    --     ps:setColors(100, 255, 200, 255, 100, 255, 200, 0)
+    --     ps:emit(1)
+    -- end)
     return self
 end
 
 function shot:die()
     require('entity.objectManager'):removeShot(self)
+    -- self.ps:stop()
 end
 
 function shot:update(dt)
@@ -34,10 +50,11 @@ function shot:update(dt)
     if self.time > self.lifetime then
         self:die()
     end
+    self.color = {100, 255, 200, lume.lerp(255, 0, (self.time/self.lifetime)^10)}
 end
 
 function shot:draw()
-    love.graphics.setColor(100, 255, 200, lume.lerp(255, 0, (self.time/self.lifetime)^10))
+    love.graphics.setColor(self.color)
     love.graphics.circle('fill', self.x, self.y, self.radius, 20)
 end
 
