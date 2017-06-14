@@ -1,20 +1,14 @@
 -- main.lua
 
+local GameState = require 'lib.gamestate'
+local Timer = require 'core.Timer'
+
 require 'core.SoundManager'
 
--- initial config
 love.math.setRandomSeed(os.time())
-love.graphics.setBackgroundColor(40, 45, 55)
 
--- load object manager
-local objectManager = require 'entity.objectManager'
-
--- define love2d callbacks
-for _, fname in ipairs({
-    'update', 'draw', 'mousepressed', 'mousereleased',
-    'keypressed', 'keyreleased',
-}) do
-    love[fname] = function(...)
-        objectManager[fname](objectManager, ...)
-    end
+function love.load()
+    GameState.registerEvents()
+    GameState.switch(require 'scenes.splash')
+    Timer:after(5, function() GameState.switch(require 'scenes.game') end)
 end

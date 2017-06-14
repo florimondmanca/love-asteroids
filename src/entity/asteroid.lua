@@ -86,18 +86,18 @@ end
 
 function asteroid:die()
     -- create particles
-    require('entity.objectManager'):removeAsteroid(self)
+    require('scenes.game'):removeAsteroid(self)
 end
 
 function asteroid:blowup(damager)
     -- if asteroid is big enough, break it into pieces
     local a = lume.angle(self.x, self.y, damager.x, damager.y)
     if self.radius/2 > asteroid.dieRadius then
-        require('entity.objectManager'):addAsteroid(asteroid.newRandom{
+        require('scenes.game'):addAsteroid(asteroid.newRandom{
             x = self.x, y = self.y,
             angle = a + math.pi/2, radius = self.radius/2
         })
-        require('entity.objectManager'):addAsteroid(asteroid.newRandom{
+        require('scenes.game'):addAsteroid(asteroid.newRandom{
             x = self.x, y = self.y,
             angle = a - math.pi/2, radius = self.radius/2
         })

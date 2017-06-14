@@ -25,7 +25,7 @@ function shot.new(x, y, angle)
 end
 
 function shot:die()
-    require('entity.objectManager'):removeShot(self)
+    require('scenes.game'):removeShot(self)
 end
 
 function shot:update(dt)

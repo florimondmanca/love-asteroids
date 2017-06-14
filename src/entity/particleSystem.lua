@@ -8,7 +8,7 @@ function particleSystem.new(texture, buffer, getX, getY, initFunc)
     function ps:update(dt)
         ps.system:update(dt)
         if ps.system:getCount() == 0 then
-            require('entity.objectManager'):removeParticleSystem(ps)
+            require('scenes.game'):removeParticleSystem(ps)
         end
     end
 
@@ -19,7 +19,7 @@ function particleSystem.new(texture, buffer, getX, getY, initFunc)
 
     function ps:stop() self.system:stop() end
 
-    return require('entity.objectManager'):addParticleSystem(ps)
+    return require('scenes.game'):addParticleSystem(ps)
 end
 
 return particleSystem
