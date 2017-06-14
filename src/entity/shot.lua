@@ -1,7 +1,7 @@
 local lume = require 'lib.lume'
 
 local w, h = love.graphics.getDimensions()
-local particleImage = love.graphics.newImage('assets/img/particle_circle.png')
+-- local particleImage = love.graphics.newImage('assets/img/particle_circle.png')
 
 local shot = {
     name = 'Shot',
