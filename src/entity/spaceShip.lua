@@ -102,10 +102,10 @@ function spaceShip:draw()
 end
 
 function spaceShip:onMessage(m)
-    if m.type == 'damage' then
+    if m.type == 'collide_asteroid' then
         self.healthBar:addQuantity(m.data)
         if self.healthBar.quantity <= 0 then
-            love.audio.play('assets/audio/playerdead.wav', 'static')
+            love.audio.play('assets/audio/player_dead.wav', 'static', false, .5)
             self:resetPos()
             self.healthBar.quantity = self.healthBar.max
         else

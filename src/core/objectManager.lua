@@ -102,7 +102,6 @@ function manager:createGroup(name)
     self:set(groupName, manager.group())
     -- create add/remove helper methods
     local capName = name:sub(1, 1):upper() .. name:sub(2)
-    print(capName)
     self['add' .. capName] = function(self, o) return self:addTo(groupName, o) end
     self['remove' .. capName] = function(self, o) self:removeFrom(groupName, o) end
 end

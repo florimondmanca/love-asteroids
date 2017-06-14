@@ -64,12 +64,18 @@ manager:addUpdateAction(function()
         for _, shot in ipairs(manager.objects.shotGroup.objects) do
             if circleCollide(shot, asteroid) then
                 manager.messageQueue:add{from=shot, to=asteroid, type='blowup'}
-                manager.messageQueue:add{from=asteroid, to=shot, type='die'}
+                manager.messageQueue:add{from=asteroid, to=shot, type='collide_asteroid'}
             end
         end
         if circleCollide(asteroid, manager.objects.spaceShip) then
-            manager.messageQueue:add{from=asteroid, to=manager.objects.spaceShip, type='damage', data=-1}
-            manager.messageQueue:add{from=manager.objects.spaceShip, to=asteroid, type='blowup'}
+            manager.messageQueue:add{
+                from=asteroid, to=manager.objects.spaceShip,
+                type='collide_asteroid', data=-1
+            }
+            manager.messageQueue:add{
+                from=manager.objects.spaceShip, to=asteroid,
+                type='blowup'
+            }
             manager.camera:shake((asteroid.radius/30)^2)
         end
     end

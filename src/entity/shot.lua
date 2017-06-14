@@ -59,7 +59,8 @@ function shot:draw()
 end
 
 function shot:onMessage(m)
-    if m.type == 'die' then
+    if m.type == 'collide_asteroid' then
+        love.audio.play('assets/audio/asteroid_blowup.wav', 'static', false, .5)
         self:die()
         return true
     end
