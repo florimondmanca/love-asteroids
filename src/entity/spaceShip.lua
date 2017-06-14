@@ -36,7 +36,6 @@ function spaceShip:resetPos()
     self.vy = 0
 end
 
-
 --- adds a force in the cartesian frame of reference
 function spaceShip:addForce(fx, fy)
     self.fx = self.fx + (fx or 0)
@@ -87,10 +86,7 @@ function spaceShip:update(dt)
 end
 
 function spaceShip:draw()
-    -- draw spaceship
     love.graphics.setColor(255, 255, 255)
-    -- love.graphics.setLineWidth(1)
-    -- love.graphics.circle('line', self.x, self.y, self.radius, 20)
     love.graphics.push()
     love.graphics.translate(self.x, self.y)
     love.graphics.push()
@@ -103,16 +99,16 @@ end
 
 function spaceShip:onMessage(m)
     if m.type == 'collide_asteroid' then
-        self.healthBar:addQuantity(m.data)
-        if self.healthBar.quantity <= 0 then
+        if spaceShip.healthBar.quantity <= 0 then
             love.audio.play('assets/audio/player_dead.wav', 'static', false, .5)
-            self:resetPos()
-            self.healthBar.quantity = self.healthBar.max
+            spaceShip:resetPos()
+            spaceShip.healthBar.quantity = spaceShip.healthBar.max
         else
             love.audio.play('assets/audio/collision.wav', 'static', false, .3)
         end
         return true
     end
 end
+
 
 return spaceShip
