@@ -99,6 +99,7 @@ end
 
 function spaceShip:onMessage(m)
     if m.type == 'collide_asteroid' then
+        spaceShip.healthBar:addQuantity(m.data)
         if spaceShip.healthBar.quantity <= 0 then
             love.audio.play('assets/audio/player_dead.wav', 'static', false, .5)
             spaceShip:resetPos()

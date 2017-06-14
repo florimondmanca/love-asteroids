@@ -7,7 +7,7 @@ end
 
 -- define your object manager here
 
-local manager = require 'core.objectManager'
+local manager = require 'core.ObjectManager'
 
 manager:set('timer', Timer.new())
 
@@ -41,7 +41,7 @@ manager:set('spaceShip', require 'entity.spaceShip')
 
 -- [TRIGGER]: create a new shot on pressing space bar
 manager:add(
-    require('core.keyTrigger'):setKey('space'):setAction(function()
+    require('core.KeyTrigger'):setKey('space'):setAction(function()
         -- add a shot
         manager:addShot(require('entity.shot').new(
             manager.objects.spaceShip.x,

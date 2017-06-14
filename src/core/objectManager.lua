@@ -6,7 +6,7 @@ local CALLBACKS = {'update', 'draw', 'mousepressed', 'mousereleased',
 local manager = {
     objects = {},
     updateActions = {},
-    messageQueue = require 'core.messageQueue',
+    messageQueue = require 'core.MessageQueue',
     camera = require('core.camera').new(),
 }
 

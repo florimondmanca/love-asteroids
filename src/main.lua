@@ -1,6 +1,6 @@
 -- main.lua
 
-require 'core.soundManager'
+require 'core.SoundManager'
 
 -- initial config
 love.math.setRandomSeed(os.time())
