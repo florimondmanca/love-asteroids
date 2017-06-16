@@ -1,15 +1,15 @@
+local class = require 'lib.class'
 local lume = require 'lib.lume'
 local easing = require 'core.easing'
 
 -- Generic action handler, basically adds some time context to a function
-local Action = {}
+local Action = class()
 
-function Action.new(func, update)
-    local self = lume.clone(Action)
+function Action:init(func, update)
     self.func = func or function() end
+    self.updateFunc = update or function() end
     self.elapsed = 0
     self.finished = false
-    self.update = update or Action.update
     return self
 end
 
@@ -18,27 +18,23 @@ function Action:isFinished() return self.finished end
 
 function Action:update(dt)
     self.elapsed = self.elapsed + dt
+    self.updateFunc(self, dt)
 end
 
 function Action:call() self.func(self.func) end
 function Action:trigger() self:call() self.elapsed = 0 end
 
 
-local Timer = {
-    actions = {},
-    tweens = {}
-}
-
+local Timer = class()
+Timer.tweens = {}
 Timer.tweens['linear'] = easing.linear
 Timer.tweens['in-quad'] = easing.inQuad
 Timer.tweens['out-quad'] = easing.outQuad
 Timer.tweens['in-out-quad'] = easing.inOutQuad
 Timer.tweens['out-in-quad'] = easing.outInQuad
 
-function Timer.new()
-    local timer = lume.clone(Timer)
-    timer.actions = {}
-    return timer
+function Timer:init()
+    self.actions = {}
 end
 
 function Timer:addAction(action)
@@ -47,8 +43,7 @@ end
 
 --- `func` will be executed after `delay` seconds
 function Timer:after(delay, func)
-    return self:addAction(Action.new(func, function(self, dt)
-        Action.update(self, dt)
+    return self:addAction(Action(func, function(self)
         if self.elapsed > delay then
             self:trigger()
             self:finish()
@@ -62,8 +57,7 @@ end
 function Timer:every(delay, func, count)
     count = count or math.huge
     local step = 1
-    return self:addAction(Action.new(func, function(self, dt)
-        Action.update(self, dt)
+    return self:addAction(Action(func, function(self)
         if step == 1 or self.elapsed > delay then
             self:trigger()
             step = step + 1
@@ -76,8 +70,7 @@ end
 -- optional `after` function is called after the last `func` execution.
 function Timer:during(delay, func, after)
     after = after or function() end
-    return self:addAction(Action.new(nil, function(self, dt)
-        Action.update(self, dt)
+    return self:addAction(Action(nil, function(self, dt)
         if self.elapsed < delay then func(dt, self.elapsed)
         else after(after) self:finish() end
     end))
@@ -119,6 +112,8 @@ function Timer:update(dt)
     end
     for _, action in ipairs(finished) do lume.remove(self.actions, action) end
 end
+
+Timer.global = Timer()
 
 
 return Timer

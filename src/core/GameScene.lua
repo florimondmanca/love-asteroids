@@ -1,22 +1,18 @@
+local class = require 'lib.class'
 local lume = require 'lib.lume'
+
+local MessageQueue = require 'core.MessageQueue'
+local Camera = require 'core.Camera'
+
 local CALLBACKS = {'update', 'draw', 'mousepressed', 'mousereleased',
 'keypressed', 'keyreleased'}
 
+local GameScene = class()
 
-local GameScene = {
-    objects = {},
-    updateActions = {},
-    messageQueue = require 'core.MessageQueue',
-    camera = require('core.camera').new(),
-}
-
-function GameScene.new()
-    local self = lume.clone(GameScene)
+function GameScene:init()
     self.objects = {}
-    self.updateActions = {}
-    self.messageQueue = require 'core.MessageQueue'
-    self.camera = require('core.camera').new()
-    return self
+    self.messageQueue = MessageQueue()
+    self.camera = Camera()
 end
 
 -- love2d callbacks
@@ -31,9 +27,6 @@ end
 local update = GameScene.update
 function GameScene:update(dt)
     update(self, dt)
-    for _, updateAction in ipairs(self.updateActions) do
-        updateAction(dt)
-    end
     self.messageQueue:dispatch()
 end
 
@@ -99,12 +92,6 @@ function GameScene.group()
 end
 
 --- creates a new group and the associated add/remove helper methods
--- the group name must be singular (e.g. 'enemy', 'flower', etc.)
--- example for an 'enemy' group:
--- GameScene:createGroup('enemy')  -- creates the group
--- GameScene:addEnemy(enemy)  -- adds an enemy to the group 'enemy'
--- GameScene:removeEnemy(enemy)  -- removes an enemy from the group 'enemy'
--- GameScene.objects.enemyGroup.objects  -- access the group's object list
 function GameScene:createGroup(name)
     local groupName = name .. 'Group'
     -- create the group

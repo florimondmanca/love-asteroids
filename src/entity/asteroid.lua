@@ -1,3 +1,4 @@
+local class = require 'lib.class'
 local lume = require 'lib.lume'
 
 local w, h = love.graphics.getDimensions()
@@ -35,44 +36,39 @@ local function newParticles(x, y, number, size, angle)
 end
 
 
-local asteroid = {
-    name = 'Asteroid',
-    radius = 21,
-    speed = 100, -- px/s
-    dieRadius = 10,
-    omega = 1,
-    rotation = 0,
-}
+local Asteroid = class()
+Asteroid.speed = 100
+Asteroid.radius = 21
+Asteroid.omega = 1
+Asteroid.rotation = 0
+Asteroid.dieRadius = 10
 
-function asteroid.new(t)
+function Asteroid:init(t)
     assert(t.x, 'x required')
     assert(t.y, 'y required')
     assert(t.angle, 'angle required')
-    local self = lume.clone(asteroid)
-    -- self.__index = asteroid
     self.x = t.x
     self.y = t.y
-    self.speed = t.speed or self.speed
-    self.radius = t.radius or self.radius
-    self.omega = t.omega or self.omega
-    self.rotation = t.rotation or self.rotation
+    self.speed = t.speed or Asteroid.speed
+    self.radius = t.radius or Asteroid.radius
+    self.omega = t.omega or Asteroid.omega
+    self.rotation = t.rotation or Asteroid.rotation
     self.quad = lume.randomchoice(asteroidQuads)
     self.vx = self.speed * math.cos(t.angle)
     self.vy = self.speed * math.sin(t.angle)
-    return self
 end
 
-function asteroid.newRandom(t)
+function Asteroid.newRandom(t)
     t = t or {}
-    t.radius = lume.noise(t.radius or asteroid.radius, .2)
-    t.speed = lume.noise(t.speed or asteroid.speed, .5)
-    t.omega = lume.noise(asteroid.omega, .5)
+    t.radius = lume.noise(t.radius or Asteroid.radius, .2)
+    t.speed = lume.noise(t.speed or Asteroid.speed, .5)
+    t.omega = lume.noise(Asteroid.omega, .5)
     t.rotation = lume.random(0, 2*math.pi)
-    return asteroid.new(t)
+    return Asteroid(t)
 end
 
-function asteroid.newRandomAtBorders()
-    local a = asteroid.newRandom{x = 0, y=0, angle=lume.random(2*math.pi)}
+function Asteroid.newRandomAtBorders()
+    local a = Asteroid.newRandom{x = 0, y=0, angle=lume.random(2*math.pi)}
     local r = a.radius
     local tlerp = {
         0, (h + 2*r) / (2*w + 2*h + 8*r),
@@ -84,20 +80,20 @@ function asteroid.newRandomAtBorders()
     return a
 end
 
-function asteroid:die()
+function Asteroid:die()
     -- create particles
     require('scenes.game'):removeAsteroid(self)
 end
 
-function asteroid:blowup(damager)
+function Asteroid:blowup(damager)
     -- if asteroid is big enough, break it into pieces
     local a = lume.angle(self.x, self.y, damager.x, damager.y)
-    if self.radius/2 > asteroid.dieRadius then
-        require('scenes.game'):addAsteroid(asteroid.newRandom{
+    if self.radius/2 >= Asteroid.dieRadius then
+        require('scenes.game'):addAsteroid(Asteroid.newRandom{
             x = self.x, y = self.y,
             angle = a + math.pi/2, radius = self.radius/2
         })
-        require('scenes.game'):addAsteroid(asteroid.newRandom{
+        require('scenes.game'):addAsteroid(Asteroid.newRandom{
             x = self.x, y = self.y,
             angle = a - math.pi/2, radius = self.radius/2
         })
@@ -106,7 +102,7 @@ function asteroid:blowup(damager)
     self:die()
 end
 
-function asteroid:update(dt)
+function Asteroid:update(dt)
     -- integrate rotation
     self.rotation = self.rotation + self.omega * dt
     -- integrate translation
@@ -117,7 +113,7 @@ function asteroid:update(dt)
     self.y = lume.loop(self.y, 0, h, self.radius)
 end
 
-function asteroid:draw()
+function Asteroid:draw()
     love.graphics.setColor(255, 255, 255)
     -- love.graphics.setLineWidth(1)
     -- love.graphics.circle('line', self.x, self.y, self.radius, 20)
@@ -130,7 +126,7 @@ function asteroid:draw()
     love.graphics.pop()
 end
 
-function asteroid:onMessage(m)
+function Asteroid:onMessage(m)
     if m.type == 'blowup' then
         self:blowup(m.from)
         return true
@@ -141,4 +137,4 @@ function asteroid:onMessage(m)
     end
 end
 
-return asteroid
+return Asteroid

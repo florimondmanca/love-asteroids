@@ -1,11 +1,23 @@
+local class = require 'lib.class'
 local lume = require 'lib.lume'
+
+local shooters = require 'entity.shooters'
+
+local QuantityBar = require 'entity.QuantityBar'
 
 local w, h = love.graphics.getDimensions()
 
-local spaceShip = {
-    name = 'SpaceShip',
-    -- translation physics
+local SpaceShip = class()
+
+SpaceShip:set{
+    image = love.graphics.newImage('assets/img/spaceship.png'),
+    -- body properties
     mass = .4,
+    radius = {
+        get = function(self) return self.image:getWidth()/2 end,
+        set = function(self, new) return new end,
+    },
+    -- translation physics
     x = w/2,
     y = h/2,
     vx = 0,
@@ -23,13 +35,23 @@ local spaceShip = {
     maxOmega = 3,
     torque = 0,
     accTorque = 30,
-    --
-    healthBar = require('entity.quantityBar').new{initial=5, min=0, max=5},
-    image = love.graphics.newImage('assets/img/spaceship.png'),
 }
-spaceShip.radius = spaceShip.image:getWidth()/2
 
-function spaceShip:resetPos()
+function SpaceShip:init(t)
+    if t.health then
+        if type(t.health) == 'number' then t.health = {max = t.health} end
+    end
+    self.healthBar = QuantityBar(t.health or {max = 10})
+    t.health = nil
+    -- update attributes from t
+    for k, v in pairs(t) do
+        if SpaceShip[k] then self[k] = v
+        else print('warning: unknown property ' .. k .. ' for SpaceShip') end
+    end
+    self.shooter = shooters.simple
+end
+
+function SpaceShip:resetPos()
     self.x = w/2
     self.y = h/2
     self.vx = 0
@@ -37,7 +59,7 @@ function spaceShip:resetPos()
 end
 
 --- adds a force in the cartesian frame of reference
-function spaceShip:addForce(fx, fy)
+function SpaceShip:addForce(fx, fy)
     self.fx = self.fx + (fx or 0)
     self.fy = self.fy + (fy or 0)
 end
@@ -45,18 +67,18 @@ end
 --- adds a force in the spaceship's frame of reference
 -- fPar : force in the direction of movement
 -- fOrth : force perpendicular to the direction of movement
-function spaceShip:addForceV(fPar, fOrth)
+function SpaceShip:addForceV(fPar, fOrth)
     fPar = fPar or 0
     fOrth = fOrth or 0
     self.fx = self.fx + (fPar * self.cos - fOrth * self.sin)
     self.fy = self.fy + (fPar * self.sin + fOrth * self.cos)
 end
 
-function spaceShip:addTorque(t)
+function SpaceShip:addTorque(t)
     self.torque = self.torque + t
 end
 
-function spaceShip:update(dt)
+function SpaceShip:update(dt)
     -- apply forces/torque based on input
     if love.keyboard.isDown('up') then self:addForceV(self.accForce) end
     if love.keyboard.isDown('down') then self:addForceV(-self.accForce) end
@@ -85,25 +107,33 @@ function spaceShip:update(dt)
     self.y = lume.loop(self.y, 0, h, self.image:getHeight()/2)
 end
 
-function spaceShip:draw()
+function SpaceShip:draw()
     love.graphics.setColor(255, 255, 255)
     love.graphics.push()
-    love.graphics.translate(self.x, self.y)
-    love.graphics.push()
-    love.graphics.rotate(self.angle)
-    love.graphics.draw(self.image, -self.image:getWidth()/2, -self.image:getHeight()/2)
-    love.graphics.pop()
-    self.healthBar:draw()
+        love.graphics.translate(self.x, self.y)
+        love.graphics.push()
+            love.graphics.rotate(self.angle)
+            love.graphics.draw(self.image, -self.image:getWidth()/2, -self.image:getHeight()/2)
+        love.graphics.pop()
+        self.healthBar:draw()
     love.graphics.pop()
 end
 
-function spaceShip:onMessage(m)
+function SpaceShip:shoot()
+    self.shooter(self)
+    love.audio.play(
+        lume.format('assets/audio/shot{n}.wav',
+        {n=lume.randomchoice{1, 2, 3}}), 'static', false, .4
+    )
+end
+
+function SpaceShip:onMessage(m)
     if m.type == 'collide_asteroid' then
-        spaceShip.healthBar:addQuantity(m.data)
-        if spaceShip.healthBar.quantity <= 0 then
+        self.healthBar:addQuantity(m.data)
+        if self.healthBar.quantity <= 0 then
             love.audio.play('assets/audio/player_dead.wav', 'static', false, .5)
-            spaceShip:resetPos()
-            spaceShip.healthBar.quantity = spaceShip.healthBar.max
+            self:resetPos()
+            self.healthBar.quantity = self.healthBar.max
         else
             love.audio.play('assets/audio/collision.wav', 'static', false, .3)
         end
@@ -112,4 +142,4 @@ function spaceShip:onMessage(m)
 end
 
 
-return spaceShip
+return SpaceShip

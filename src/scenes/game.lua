@@ -1,67 +1,60 @@
-local lume = require 'lib.lume'
 local collisions = require 'core.collisions'
 
-local gameScene = require('core.GameScene').new()
-
+local SpaceShip = require 'entity.SpaceShip'
+local Asteroid = require 'entity.asteroid'
+local KeyTrigger = require 'core.KeyTrigger'
 local Timer = require 'core.Timer'
+
+local gameScene = require('core.GameScene'):new()
 
 
 function gameScene:init()
-    self:add(Timer)
+    self:set('timer', Timer())
     -- object groups
     self:createGroup('shot')
     self:createGroup('asteroid')
     self:createGroup('particleSystem')
 
-    -- player's spaceship
-    self:set('spaceShip', require 'entity.spaceShip')
+    -- init player's spaceship
+    self:set('spaceShip', SpaceShip{health=5})
 
-    -- [TRIGGER]: create a new shot on pressing space bar
-    self:add(
-        require('core.KeyTrigger'):setKey('space'):setAction(function()
-            -- add a shot
-            self:addShot(require('entity.shot').new(
-                self.objects.spaceShip.x,
-                self.objects.spaceShip.y,
-                self.objects.spaceShip.angle
-            ))
-            -- player a laser sound
-            love.audio.play(
-                lume.format('assets/audio/shot{n}.wav',
-                {n=lume.randomchoice{1, 2, 3}}), 'static', false, .4
-            )
-        end)
-    )
+    -- shoot on space key pressed
+    self:add(KeyTrigger{key='space', action=function()
+        self.objects.spaceShip:shoot()
+    end})
 
     -- create asteroids
     for _ = 1, 30 do
-        self:addAsteroid(require('entity.asteroid').newRandomAtBorders())
+        self:addAsteroid(Asteroid.newRandomAtBorders())
     end
+end
 
-    -- update actions
-    self:addUpdateAction(function()
-        for _, asteroid in ipairs(self.objects.asteroidGroup.objects) do
-            -- check collisions between shots and asteroids
-            for _, shot in ipairs(self.objects.shotGroup.objects) do
-                if collisions.circleToCircle(shot, asteroid) then
-                    self.messageQueue:add{from=shot, to=asteroid, type='blowup'}
-                    self.messageQueue:add{from=asteroid, to=shot, type='collide_asteroid'}
-                end
-            end
-            -- check collisions between asteroids and the player
-            if collisions.circleToCircle(asteroid, self.objects.spaceShip) then
-                self.messageQueue:add{
-                    from=asteroid, to=self.objects.spaceShip,
-                    type='collide_asteroid', data=-1
-                }
-                self.messageQueue:add{
-                    from=gameScene.objects.spaceShip, to=asteroid,
-                    type='blowup'
-                }
-                self.camera:shake(Timer, (asteroid.radius/30)^2)
+local update = gameScene.update
+function gameScene:update(dt)
+    update(self, dt)
+    -- check collisions between shots and asteroids
+    for _, asteroid in ipairs(self.objects.asteroidGroup.objects) do
+        for _, shot in ipairs(self.objects.shotGroup.objects) do
+            if collisions.circleToCircle(shot, asteroid) then
+                self.messageQueue:add{from=shot, to=asteroid, type='blowup'}
+                self.messageQueue:add{from=asteroid, to=shot, type='collide_asteroid'}
             end
         end
-    end)
+    end
+    -- check collisions between asteroids and the player
+    for _, asteroid in ipairs(self.objects.asteroidGroup.objects) do
+        if collisions.circleToCircle(asteroid, self.objects.spaceShip) then
+            self.messageQueue:add{
+                from=asteroid, to=self.objects.spaceShip,
+                type='collide_asteroid', data=-1
+            }
+            self.messageQueue:add{
+                from=gameScene.objects.spaceShip, to=asteroid,
+                type='blowup'
+            }
+            self.camera:shake(self.objects.timer, (asteroid.radius/30)^2)
+        end
+    end
 end
 
 function gameScene:enter()

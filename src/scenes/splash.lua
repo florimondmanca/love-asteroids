@@ -2,7 +2,7 @@ local w, h = love.graphics.getDimensions()
 
 local menuScene = require('core.GameScene').new()
 
-menuScene:set('timer', require 'core.Timer')
+menuScene:set('timer', require('core.Timer'):new())
 
 local progressBar = {angle = math.pi/2, span = 0, radius = 30, omega = 1}
 
