@@ -1,15 +1,18 @@
 local class = require 'lib.class'
 
 local Pickup = class()
-Pickup:set{radius = 5}
+Pickup:set{
+    radius = 5,
+    lifetime = 5,
+}
 
-function Pickup:init(x, y, action)
+function Pickup:init(x, y)
     assert(x, 'x required')
     assert(y, 'y required')
-    assert(action, 'action required')
     self.x = x
     self.y = y
-    self.action = action
+    self.action = function() end
+    self.onCollect = function() end
 end
 
 function Pickup:onCollected(object)

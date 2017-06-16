@@ -41,15 +41,18 @@ function gameScene:update(dt)
             if collisions.circleToCircle(shot, asteroid) then
                 self.messageQueue:add{from=shot, to=asteroid, type='blowup'}
                 self.messageQueue:add{from=asteroid, to=shot, type='collide_asteroid'}
-                -- create a pickup with probability 0.1
+                -- randomly create a pickup
                 if love.math.random() < .1 then
-                    local p = self:addPickup(Pickup(asteroid.x, asteroid.y, function()
-                        self.objects.spaceShip.shooter = 'triple'
+                    local p = Pickup(self.objects.timer, asteroid.x, asteroid.y)
+                    p.action = function(spaceShip)
+                        spaceShip.shooter = 'triple'
                         self.objects.timer:after(5, function()
-                            self.objects.spaceShip.shooter = 'simple'
+                            spaceShip.shooter = 'simple'
                         end)
-                    end))
-                    self.objects.timer:after(5, function()
+                    end
+                    p.lifetime = 5
+                    self:addPickup(p)
+                    self.objects.timer:after(p.lifetime, function()
                         self:removePickup(p)
                     end)
                 end
@@ -74,7 +77,7 @@ function gameScene:update(dt)
     -- check collisions between player and pickups
     for _, pickup in ipairs(self.objects.pickupGroup.objects) do
         if collisions.circleToCircle(pickup, self.objects.spaceShip) then
-            pickup:onCollected()
+            pickup:onCollected(self.objects.spaceShip)
             self:removePickup(pickup)
         end
     end
