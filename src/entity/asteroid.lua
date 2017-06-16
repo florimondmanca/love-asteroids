@@ -1,6 +1,8 @@
 local class = require 'lib.class'
 local lume = require 'lib.lume'
 
+local Pickup = require 'core.Pickup'
+
 local w, h = love.graphics.getDimensions()
 
 local asteroidSheet = love.graphics.newImage('assets/img/asteroid4.png')
@@ -43,10 +45,12 @@ Asteroid.omega = 1
 Asteroid.rotation = 0
 Asteroid.dieRadius = 10
 
-function Asteroid:init(t)
+function Asteroid:init(scene, t)
+    assert(scene, 'scene required')
     assert(t.x, 'x required')
     assert(t.y, 'y required')
     assert(t.angle, 'angle required')
+    self.scene = scene
     self.x = t.x
     self.y = t.y
     self.speed = t.speed or Asteroid.speed
@@ -58,17 +62,17 @@ function Asteroid:init(t)
     self.vy = self.speed * math.sin(t.angle)
 end
 
-function Asteroid.newRandom(t)
+function Asteroid.newRandom(scene, t)
     t = t or {}
     t.radius = lume.noise(t.radius or Asteroid.radius, .2)
     t.speed = lume.noise(t.speed or Asteroid.speed, .5)
     t.omega = lume.noise(Asteroid.omega, .5)
     t.rotation = lume.random(0, 2*math.pi)
-    return Asteroid(t)
+    return Asteroid(scene, t)
 end
 
-function Asteroid.newRandomAtBorders()
-    local a = Asteroid.newRandom{x = 0, y=0, angle=lume.random(2*math.pi)}
+function Asteroid.newRandomAtBorders(scene)
+    local a = Asteroid.newRandom(scene, {x = 0, y=0, angle=lume.random(2*math.pi)})
     local r = a.radius
     local tlerp = {
         0, (h + 2*r) / (2*w + 2*h + 8*r),
@@ -82,21 +86,21 @@ end
 
 function Asteroid:die()
     -- create particles
-    require('scenes.game'):removeAsteroid(self)
+    self.scene:removeAsteroid(self)
 end
 
 function Asteroid:blowup(damager)
     -- if asteroid is big enough, break it into pieces
     local a = lume.angle(self.x, self.y, damager.x, damager.y)
     if self.radius/2 >= Asteroid.dieRadius then
-        require('scenes.game'):addAsteroid(Asteroid.newRandom{
+        self.scene:addAsteroid(Asteroid.newRandom(self.scene, {
             x = self.x, y = self.y,
             angle = a + math.pi/2, radius = self.radius/2
-        })
-        require('scenes.game'):addAsteroid(Asteroid.newRandom{
+        }))
+        self.scene:addAsteroid(Asteroid.newRandom(self.scene, {
             x = self.x, y = self.y,
             angle = a - math.pi/2, radius = self.radius/2
-        })
+        }))
     end
     newParticles(self.x, self.y, lume.lerp(1, 16, (self.radius/30)^2), lume.lerp(.1, 1, self.radius/30), a)
     self:die()
@@ -115,6 +119,7 @@ end
 
 function Asteroid:draw()
     love.graphics.setColor(255, 255, 255)
+    -- -- debug circle
     -- love.graphics.setLineWidth(1)
     -- love.graphics.circle('line', self.x, self.y, self.radius, 20)
     love.graphics.push()

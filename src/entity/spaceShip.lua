@@ -20,8 +20,12 @@ SpaceShip:set{
     shooter = {
         value = shooters.simple,
         get = function(self, value) return value end,
-        set = function(self, name)
-            return shooters[name] or error('No shooter named ' .. name, 3)
+        set = function(self, shooter)
+            if type(shooter) == 'string' then
+                return shooters[shooter] or error('No shooter named ' .. tostring(shooter), 3)
+            else
+                return shooter
+            end
         end
     },
     -- translation physics
@@ -142,6 +146,7 @@ function SpaceShip:onMessage(m)
         if self.healthBar.quantity <= 0 then
             love.audio.play('assets/audio/player_dead.wav', 'static', false, .5)
             self:resetPos()
+            self.shooter = 'simple'
             self.healthBar.quantity = self.healthBar.max
         else
             love.audio.play('assets/audio/collision.wav', 'static', false, .3)
