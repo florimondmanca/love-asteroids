@@ -1,34 +1,35 @@
+local class = require 'lib.class'
 local lume = require 'lib.lume'
 
 local w, h = love.graphics.getDimensions()
 
-local shot = {
-    name = 'Shot',
+local Shot = class()
+
+Shot:set{
     radius = 3,
     speed = 350,
     lifetime = .8,
-    time = 0,
     color = {100, 255, 200}
 }
 
-function shot.new(x, y, angle)
+function Shot:init(scene, x, y, angle)
+    assert(scene, 'scene required')
     assert(x, 'x required')
     assert(y, 'y required')
     assert(angle, 'angle required')
-    local self = lume.clone(shot)
-    self.__index = shot
+    self.scene = scene
     self.x = x
     self.y = y
     self.vx = self.speed * math.cos(angle)
     self.vy = self.speed * math.sin(angle)
-    return self
+    self.time = 0
 end
 
-function shot:die()
-    require('scenes.game'):removeShot(self)
+function Shot:die()
+    self.scene:removeShot(self)
 end
 
-function shot:update(dt)
+function Shot:update(dt)
     self.x = lume.loop(self.x + self.vx * dt, 0, w, self.radius)
     self.y = lume.loop(self.y + self.vy * dt, 0, h, self.radius)
     self.time = self.time + dt
@@ -38,12 +39,12 @@ function shot:update(dt)
     self.color = {100, 255, 200, lume.lerp(255, 0, (self.time/self.lifetime)^10)}
 end
 
-function shot:draw()
+function Shot:draw()
     love.graphics.setColor(self.color)
     love.graphics.circle('fill', self.x, self.y, self.radius, 20)
 end
 
-function shot:onMessage(m)
+function Shot:onMessage(m)
     if m.type == 'collide_asteroid' then
         love.audio.play('assets/audio/asteroid_blowup.wav', 'static', false, .5)
         self:die()
@@ -52,4 +53,4 @@ function shot:onMessage(m)
 end
 
 
-return shot
+return Shot

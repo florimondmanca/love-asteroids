@@ -1,7 +1,7 @@
 local collisions = require 'core.collisions'
 
 local SpaceShip = require 'entity.SpaceShip'
-local Asteroid = require 'entity.asteroid'
+local Asteroid = require 'entity.Asteroid'
 local KeyTrigger = require 'core.KeyTrigger'
 local Timer = require 'core.Timer'
 
@@ -16,7 +16,8 @@ function gameScene:init()
     self:createGroup('particleSystem')
 
     -- init player's spaceship
-    self:set('spaceShip', SpaceShip{health=5})
+    self:set('spaceShip', SpaceShip(self, {health = 5}))
+    -- self.objects.spaceShip.shooter = 'triple'
 
     -- shoot on space key pressed
     self:add(KeyTrigger{key='space', action=function()

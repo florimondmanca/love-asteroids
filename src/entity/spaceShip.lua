@@ -17,6 +17,13 @@ SpaceShip:set{
         get = function(self) return self.image:getWidth()/2 end,
         set = function(self, new) return new end,
     },
+    shooter = {
+        value = shooters.simple,
+        get = function(self, value) return value end,
+        set = function(self, name)
+            return shooters[name] or error('No shooter named ' .. name, 3)
+        end
+    },
     -- translation physics
     x = w/2,
     y = h/2,
@@ -37,7 +44,9 @@ SpaceShip:set{
     accTorque = 30,
 }
 
-function SpaceShip:init(t)
+function SpaceShip:init(scene, t)
+    assert(scene, 'scene required')
+    self.scene = scene
     if t.health then
         if type(t.health) == 'number' then t.health = {max = t.health} end
     end
@@ -48,7 +57,7 @@ function SpaceShip:init(t)
         if SpaceShip[k] then self[k] = v
         else print('warning: unknown property ' .. k .. ' for SpaceShip') end
     end
-    self.shooter = shooters.simple
+    self.shooter = 'simple'
 end
 
 function SpaceShip:resetPos()
@@ -120,7 +129,7 @@ function SpaceShip:draw()
 end
 
 function SpaceShip:shoot()
-    self.shooter(self)
+    self.shooter(self.scene, self)
     love.audio.play(
         lume.format('assets/audio/shot{n}.wav',
         {n=lume.randomchoice{1, 2, 3}}), 'static', false, .4
