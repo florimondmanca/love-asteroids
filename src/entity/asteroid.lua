@@ -18,7 +18,7 @@ local particleImage = love.graphics.newImage('assets/img/particle_triangle.png')
 -- size : 0 (minimal size) - 1 (maximum size)
 local function newParticles(x, y, number, size, angle)
     number = number or 16
-    return require('entity.particleSystem').new(particleImage, number,
+    return require('entity.ParticleSystem').new(particleImage, number,
     function() return x end, function() return y end,
     function(ps)
         ps:setParticleLifetime(.1, 1)
