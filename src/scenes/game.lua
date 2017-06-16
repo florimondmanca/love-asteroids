@@ -43,7 +43,7 @@ function gameScene:update(dt)
                 self.messageQueue:add{from=asteroid, to=shot, type='collide_asteroid'}
                 -- randomly create a pickup
                 if love.math.random() < .1 then
-                    local p = Pickup(self.objects.timer, asteroid.x, asteroid.y)
+                    local p = Pickup(asteroid.x, asteroid.y)
                     p.action = function(spaceShip)
                         spaceShip.shooter = 'triple'
                         self.objects.timer:after(5, function()
