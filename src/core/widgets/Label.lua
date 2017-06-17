@@ -5,10 +5,9 @@ local Label = class()
 Label:set{
     text = {
         value = '',
-        set = function(self, text, old)
-            text = text or old
-            self.textObject:set(text)
-            return text end
+        set = function(self, text, old) return text or old end,
+        afterSet = function(self, text)
+            self.textObject:set(self.prefix .. text .. self.suffix) end
     }
 }
 
@@ -16,11 +15,12 @@ function Label:init(t)
     t = t or {}
     assert(t.x, 'x required')
     assert(t.y, 'y required')
-    t.text = t.text or ''
     self.x = t.x
     self.y = t.y
     self.textObject = love.graphics.newText(love.graphics.getFont())
-    self.text = t.text
+    self.prefix = t.prefix or '' -- printed before the variable text
+    self.suffix = t.suffix or '' -- printed after the variable text
+    self.text = t.text or ''
 end
 
 function Label:draw()

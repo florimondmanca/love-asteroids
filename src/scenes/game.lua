@@ -5,6 +5,8 @@ local SpaceShip = require 'entity.SpaceShip'
 local Asteroid = require 'entity.Asteroid'
 local Signal = require('lib.signal').new()
 
+local w, h = love.graphics.getDimensions()
+
 local gameScene = require('core.GameScene'):extend()
 
 gameScene:set{
@@ -26,7 +28,8 @@ function gameScene:setup()
     self:createGroup('pickups')
     self:createGroup('widgets')
 
-    self.groups.widgets:addAs('scoreLabel', require('core.widgets.TextLabel'){x=50, y=50, text='0'})
+    self.groups.widgets:addAs('scoreLabel', require('core.widgets.Label'){x=50, y=50, text='0', prefix='Score\n'})
+    self.groups.widgets:add(require('core.widgets.TimeCounter'){x=w-100, y=50})
 
     Signal:register('changed-score', function(score)
         self.groups.widgets

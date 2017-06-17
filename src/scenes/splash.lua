@@ -1,32 +1,38 @@
+local gamestate = require 'lib.gamestate'
+
 local w, h = love.graphics.getDimensions()
 
 local menuScene = require('core.GameScene'):new()
 
-local progressBar = {angle = math.pi/2, span = 0, radius = 30, omega = 1}
-
-function progressBar:update(dt)
-    self.angle = self.angle + self.omega * dt
-end
-
-function progressBar:draw()
-    love.graphics.setColor(255, 255, 255, 200)
-    love.graphics.setLineWidth(10)
-    love.graphics.arc('line', 'open', w/2, h/2, self.radius, self.angle, self.angle + self.span)
-end
-
 function menuScene:init()
-    self:addAs('timer', require('core.Timer').global)
-    self:addAs('progressBar', progressBar)
+    self:addAs('logo', {
+        x = w/2,
+        y = h/2,
+        scale = 1,
+        image = love.graphics.newImage('assets/img/logo.png'),
+        draw = function(self)
+            love.graphics.setColor(255, 255, 255)
+            love.graphics.push()
+            love.graphics.translate(
+                self.x - self.image:getWidth()/2 * self.scale,
+                self.y - self.image:getHeight()/2 * self.scale)
+            love.graphics.scale(self.scale)
+            love.graphics.draw(self.image)
+            love.graphics.pop()
+        end
+    })
 end
 
 function menuScene:enter()
     love.graphics.setBackgroundColor(40, 45, 55)
-    self.objects.timer:tween(5, self.objects.progressBar, {span = 2*math.pi}, 'in-out-quad')
     self.objects.timer:after(5, function()
-        require('lib.gamestate').switch(require 'scenes.game')
+        gamestate.switch(require 'scenes.game')
+    end)
+    self.objects.logo.x = -500
+    self.objects.timer:tween(1, self.objects.logo, {x=w/2}, 'out-exp')
+    self.objects.timer:after(4, function()
+        self.objects.timer:tween(1, self.objects.logo, {x = w+500}, 'in-exp')
     end)
 end
-
-
 
 return menuScene
