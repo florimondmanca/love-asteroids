@@ -1,5 +1,6 @@
 local class = require 'lib.class'
 local lume = require 'lib.lume'
+local Signal = require 'lib.signal'
 
 local timer = require('core.Timer').global
 local w, h = love.graphics.getDimensions()
@@ -28,6 +29,9 @@ function Shot:init(scene, x, y, angle)
     timer:after(.7*self.lifetime, function()
         timer:tween(.3*self.lifetime, self, {opacity = 0}, 'in-exp')
     end)
+    Signal.register('collision-asteroid-shot', function(_, shot)
+        if shot == self then self:die() end
+    end)
 end
 
 function Shot:die()
@@ -47,14 +51,6 @@ end
 function Shot:draw()
     love.graphics.setColor(self.color)
     love.graphics.circle('fill', self.x, self.y, self.radius, 20)
-end
-
-function Shot:onMessage(m)
-    if m.subject == 'collide_asteroid' then
-        love.audio.play('assets/audio/asteroid_blowup.wav', 'static', false, .5)
-        self:die()
-        return true
-    end
 end
 
 

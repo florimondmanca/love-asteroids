@@ -1,8 +1,8 @@
 local class = require 'lib.class'
 local lume = require 'lib.lume'
+local Signal = require 'lib.signal'
 
 local shooters = require 'entity.shooters'
-
 local QuantityBar = require 'entity.QuantityBar'
 
 local w, h = love.graphics.getDimensions()
@@ -62,6 +62,14 @@ function SpaceShip:init(scene, t)
         else print('warning: unknown property ' .. k .. ' for SpaceShip') end
     end
     self.shooter = 'simple'
+    Signal.register('fire_laser', function()
+        self.shooter(self.scene, self)
+        love.audio.play('assets/audio/shot' .. lume.randomchoice{1, 2, 3} .. '.wav', 'static', false, .7)
+    end)
+    Signal.register('collision-asteroid-player', function(_, player)
+        if player ~= self then return end
+        love.audio.play('assets/audio/collision.wav', 'static', false, .5)
+    end)
 end
 
 function SpaceShip:resetPos()
@@ -130,14 +138,6 @@ function SpaceShip:draw()
         love.graphics.pop()
         self.healthBar:draw()
     love.graphics.pop()
-end
-
-function SpaceShip:shoot()
-    self.shooter(self.scene, self)
-    love.audio.play(
-        lume.format('assets/audio/shot{n}.wav',
-        {n=lume.randomchoice{1, 2, 3}}), 'static', false, .4
-    )
 end
 
 function SpaceShip:onMessage(m)

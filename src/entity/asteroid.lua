@@ -1,5 +1,6 @@
 local class = require 'lib.class'
 local lume = require 'lib.lume'
+local Signal = require 'lib.signal'
 
 local w, h = love.graphics.getDimensions()
 
@@ -61,6 +62,15 @@ function Asteroid:init(scene, t)
     self.quad = lume.randomchoice(asteroidQuads)
     self.vx = self.speed * math.cos(t.angle)
     self.vy = self.speed * math.sin(t.angle)
+    Signal.register('collision-asteroid-shot', function(asteroid, shot)
+        if asteroid ~= self then return end
+        self:blowup(shot)
+        love.audio.play('assets/audio/asteroid_blowup.wav', 'static', false, .7)
+    end)
+    Signal.register('collision-asteroid-player', function(asteroid, player)
+        if asteroid ~= self then return end
+        self:blowup(player)
+    end)
 end
 
 function Asteroid.newRandom(scene, t)
@@ -86,7 +96,6 @@ function Asteroid.newRandomAtBorders(scene)
 end
 
 function Asteroid:die()
-    -- create particles
     self.scene.groups.asteroids:remove(self)
 end
 
@@ -132,13 +141,6 @@ function Asteroid:draw()
         love.graphics.scale(s, s)
         love.graphics.draw(asteroidSheet, self.quad, -1/s*self.radius, -1/s*self.radius)
     love.graphics.pop()
-end
-
-function Asteroid:onMessage(m)
-    if m.subject == 'blowup' then
-        self:blowup(m.from)
-        return true
-    end
 end
 
 return Asteroid
