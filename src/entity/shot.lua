@@ -1,6 +1,7 @@
 local class = require 'lib.class'
 local lume = require 'lib.lume'
 
+local timer = require('core.Timer').global
 local w, h = love.graphics.getDimensions()
 
 local Shot = class()
@@ -23,6 +24,11 @@ function Shot:init(scene, x, y, angle)
     self.vx = self.speed * math.cos(angle)
     self.vy = self.speed * math.sin(angle)
     self.time = 0
+    self.opacity = 255
+    timer:after(.7*self.lifetime, function()
+        print('hello')
+        timer:tween(.3*self.lifetime, self, {opacity = 0}, 'in-exp')
+    end)
 end
 
 function Shot:die()
@@ -36,7 +42,7 @@ function Shot:update(dt)
     if self.time > self.lifetime then
         self:die()
     end
-    self.color = {100, 255, 200, lume.lerp(255, 0, (self.time/self.lifetime)^10)}
+    self.color = {100, 255, 200, self.opacity}
 end
 
 function Shot:draw()

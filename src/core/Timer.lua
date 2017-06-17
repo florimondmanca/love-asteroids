@@ -32,6 +32,8 @@ Timer.tweens['in-quad'] = easing.inQuad
 Timer.tweens['out-quad'] = easing.outQuad
 Timer.tweens['in-out-quad'] = easing.inOutQuad
 Timer.tweens['out-in-quad'] = easing.outInQuad
+Timer.tweens['in-exp'] = easing.inExp
+Timer.tweens['out-exp'] = easing.outExp
 
 function Timer:init()
     self.actions = {}

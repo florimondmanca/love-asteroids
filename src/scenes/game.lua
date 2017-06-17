@@ -10,7 +10,7 @@ local gameScene = require('core.GameScene'):new()
 
 
 function gameScene:init()
-    self:set('timer', Timer())
+    self:addAs('timer', Timer.global)
     -- object groups
     self:createGroup('shot')
     self:createGroup('asteroid')
@@ -18,7 +18,7 @@ function gameScene:init()
     self:createGroup('pickup')
 
     -- init player's spaceship
-    self:set('spaceShip', SpaceShip(self, {health = 5}))
+    self:addAs('spaceShip', SpaceShip(self, {health = 5}))
     -- self.objects.spaceShip.shooter = 'triple'
 
     -- shoot on space key pressed

@@ -18,14 +18,13 @@ function Pickup:init(x, y)
     self.angle = love.math.random(2*math.pi)
     function self:update(dt)
         self.time = self.time + dt
-        self.y = y + 2 * math.sin(4*math.pi*self.time)
+        self.y = y + 2 * math.sin(3*math.pi*self.time)
     end
 end
 
 function Pickup:onCollected(object)
     self.action(object)
 end
-
 
 function Pickup:draw()
     love.graphics.setColor(200, 200, 100)

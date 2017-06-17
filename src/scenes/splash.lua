@@ -1,8 +1,6 @@
 local w, h = love.graphics.getDimensions()
 
-local menuScene = require('core.GameScene').new()
-
-menuScene:set('timer', require('core.Timer'):new())
+local menuScene = require('core.GameScene'):new()
 
 local progressBar = {angle = math.pi/2, span = 0, radius = 30, omega = 1}
 
@@ -16,7 +14,10 @@ function progressBar:draw()
     love.graphics.arc('line', 'open', w/2, h/2, self.radius, self.angle, self.angle + self.span)
 end
 
-menuScene:set('progressBar', progressBar)
+function menuScene:init()
+    self:addAs('timer', require('core.Timer').global)
+    self:addAs('progressBar', progressBar)
+end
 
 function menuScene:enter()
     love.graphics.setBackgroundColor(40, 45, 55)

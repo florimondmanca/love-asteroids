@@ -46,14 +46,14 @@ end
 --- adds an object to a labelled group
 -- if group doesn't exist, it is created
 function GameScene:addTo(group, o)
-    if not self.objects[group] then self:set(group, GameScene.group()) end
+    if not self.objects[group] then self:addAs(group, GameScene.group()) end
     self.objects[group]:add(o)
     return o
 end
 
 --- registers a labelled object to the GameScene
 -- object will be accessible through GameScene.objects.<key> later on
-function GameScene:set(key, o)
+function GameScene:addAs(key, o)
     self.objects[key] = o
     return o
 end
@@ -95,7 +95,7 @@ end
 function GameScene:createGroup(name)
     local groupName = name .. 'Group'
     -- create the group
-    self:set(groupName, GameScene.group())
+    self:addAs(groupName, GameScene.group())
     -- create add/remove helper methods
     local capName = name:sub(1, 1):upper() .. name:sub(2)
     self['add' .. capName] = function(self, o) return self:addTo(groupName, o) end
