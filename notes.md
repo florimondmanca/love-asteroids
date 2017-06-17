@@ -1,12 +1,14 @@
-# Notes
+Notes
+---
 
-## General description
+# A. General description
 
 Asteroids is a game where the player embodies a spaceship that must protect itself against and destroy incoming asteroids.
 
-## Game modes
+---
+# B. Game modes
 
-### Classic
+## 1. Classic
 
 - Level-based.
 - The player has to destroy all the asteroids to get to the next level (cool animation and/or sfx at the end of a level).
@@ -23,7 +25,7 @@ Elements of gameplay that can appear as difficulty grows:
 	- turrets : non-moving, shoot guided missiles at the player
 	- crawlers : intelligent enemies, slowly follow the player's spaceship and shoot at them
 
-### Time runner
+## 2. Time runner
 
 - Continuous flow of asteroids.
 - Limited time (e.g. 1 min).
@@ -32,10 +34,10 @@ Elements of gameplay that can appear as difficulty grows:
 - Each asteroid is worth points and the player wants to get the highest score.
 - There could be several modes : 30s, 1min, 5min.
 
+---
+# C. Graphical items
 
-## Graphical items
-
-### Powerups
+## 1. Powerups
 
 Player can pick up powerups. Three kinds of powerups :
 
@@ -43,22 +45,22 @@ Player can pick up powerups. Three kinds of powerups :
 - defense : shields
 - health : fill life bar, supplementary life
 
-#### Attack powerups
+### 1.a. Attack powerups
 
 Represented in a hot color (red-ish).
 
 - 3 or 5 lasers - lasts 5s
-- Full beam - continuous beam that destroys every asteroid in its direction (short 1s or long 3s)
+- Full beam - narrow, continuous beam that destroys every asteroid in its direction (short 1s or long 3s)
 - Mines - can be deposited and explode a few moments after - destroy nearby asteroids
 
-#### Defense powerups
+### 1.b. Defense powerups
 
 Represented in a cold tone (blue-ish).
 
 - Front shield (5s)
 - Full shield (5s)
 
-#### Health powerups
+### 1.c. Health powerups
 
 Represented in a green-ish tone.
 
