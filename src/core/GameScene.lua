@@ -13,7 +13,12 @@ function GameScene:init()
     self.objects = {}
     self.messageQueue = MessageQueue()
     self.camera = Camera()
+    self:addAs('timer', require('core.Timer').global)
+    self:setup()
 end
+
+-- callback called in :init()
+function GameScene:setup() end
 
 -- love2d callbacks
 for _, fname in ipairs(CALLBACKS) do
@@ -68,10 +73,6 @@ function GameScene:removeFrom(group, o)
     lume.remove(self.objects[group].objects, o)
 end
 
-function GameScene:addUpdateAction(action)
-    lume.push(self.updateActions, action)
-end
-
 --- creates and returns a new group (does not add register it to the GameScene)
 function GameScene.group()
     local group = {objects = {}}
@@ -102,5 +103,6 @@ function GameScene:createGroup(name)
     self['remove' .. capName] = function(self, o) self:removeFrom(groupName, o) end
 end
 
+function GameScene:sendMessage(t) self.messageQueue:add(t) end
 
 return GameScene

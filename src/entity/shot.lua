@@ -26,7 +26,6 @@ function Shot:init(scene, x, y, angle)
     self.time = 0
     self.opacity = 255
     timer:after(.7*self.lifetime, function()
-        print('hello')
         timer:tween(.3*self.lifetime, self, {opacity = 0}, 'in-exp')
     end)
 end
@@ -51,7 +50,7 @@ function Shot:draw()
 end
 
 function Shot:onMessage(m)
-    if m.type == 'collide_asteroid' then
+    if m.subject == 'collide_asteroid' then
         love.audio.play('assets/audio/asteroid_blowup.wav', 'static', false, .5)
         self:die()
         return true

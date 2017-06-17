@@ -132,11 +132,11 @@ function Asteroid:draw()
 end
 
 function Asteroid:onMessage(m)
-    if m.type == 'blowup' then
+    if m.subject == 'blowup' then
         self:blowup(m.from)
         return true
     end
-    if m.type == 'die' then
+    if m.subject == 'die' then
         self:die()
         return true
     end

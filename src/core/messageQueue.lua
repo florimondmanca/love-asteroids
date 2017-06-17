@@ -16,7 +16,7 @@ function MessageQueue:dispatch()
             if object.onMessage then
                 local success = object:onMessage(message)
                 if not success then
-                    print('Warning: ' .. object.name .. ' cannot handle "' .. message.type .. '" messages')
+                    print('Warning: ' .. object.name .. ' cannot handle "' .. message.subject .. '" messages')
                 end
             else
                 print('Warning:' .. object .. 'does not have onMessage() method')
@@ -29,10 +29,10 @@ end
 
 --- registers a message to the queue
 function MessageQueue:add(m)
-    assert(m.to, 'message to field required')
-    assert(m.from, 'message from field required')
-    assert(m.type, 'message type field required')
-    lume.push(self.messages, m)
+    assert(m.to, 'message "to" field required')
+    assert(m.from, 'message "from" field required')
+    assert(m.subject, 'message "subject" field required')
+    lume.push(self.messages, {to=m.to, from=m.from, subject=m.subject, data=m.data or {}})
 end
 
 return MessageQueue

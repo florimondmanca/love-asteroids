@@ -4,13 +4,10 @@ local SpaceShip = require 'entity.SpaceShip'
 local Asteroid = require 'entity.Asteroid'
 local KeyTrigger = require 'core.KeyTrigger'
 local Pickup = require 'core.Pickup'
-local Timer = require 'core.Timer'
 
-local gameScene = require('core.GameScene'):new()
+local gameScene = require('core.GameScene'):extend()
 
-
-function gameScene:init()
-    self:addAs('timer', Timer.global)
+function gameScene:setup()
     -- object groups
     self:createGroup('shot')
     self:createGroup('asteroid')
@@ -19,7 +16,6 @@ function gameScene:init()
 
     -- init player's spaceship
     self:addAs('spaceShip', SpaceShip(self, {health = 5}))
-    -- self.objects.spaceShip.shooter = 'triple'
 
     -- shoot on space key pressed
     self:add(KeyTrigger{key='space', action=function()
@@ -39,8 +35,8 @@ function gameScene:update(dt)
     for _, asteroid in ipairs(self.objects.asteroidGroup.objects) do
         for _, shot in ipairs(self.objects.shotGroup.objects) do
             if collisions.circleToCircle(shot, asteroid) then
-                self.messageQueue:add{from=shot, to=asteroid, type='blowup'}
-                self.messageQueue:add{from=asteroid, to=shot, type='collide_asteroid'}
+                self:sendMessage{from=shot, to=asteroid, subject='blowup'}
+                self:sendMessage{from=asteroid, to=shot, subject='collide_asteroid'}
                 -- randomly create a pickup
                 if love.math.random() < .1 then
                     local p = Pickup(asteroid.x, asteroid.y)
@@ -65,11 +61,11 @@ function gameScene:update(dt)
         if collisions.circleToCircle(asteroid, self.objects.spaceShip) then
             self.messageQueue:add{
                 from=asteroid, to=self.objects.spaceShip,
-                type='collide_asteroid', data=-1
+                subject='collide_asteroid', data=-1
             }
             self.messageQueue:add{
                 from=gameScene.objects.spaceShip, to=asteroid,
-                type='blowup'
+                subject='blowup'
             }
             self.camera:shake(self.objects.timer, (asteroid.radius/30)^2)
         end
