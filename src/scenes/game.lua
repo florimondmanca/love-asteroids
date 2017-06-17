@@ -59,11 +59,11 @@ function gameScene:update(dt)
     -- check collisions between asteroids and the player
     for _, asteroid in ipairs(self.objects.asteroidGroup.objects) do
         if collisions.circleToCircle(asteroid, self.objects.spaceShip) then
-            self.messageQueue:add{
+            self:sendMessage{
                 from=asteroid, to=self.objects.spaceShip,
                 subject='collide_asteroid', data=-1
             }
-            self.messageQueue:add{
+            self:sendMessage{
                 from=gameScene.objects.spaceShip, to=asteroid,
                 subject='blowup'
             }
