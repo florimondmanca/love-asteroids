@@ -73,7 +73,7 @@ function GameScene.group()
     -- define callbacks
     for _, fname in ipairs(CALLBACKS) do
         group[fname] = function(self, ...)
-            for _, o in ipairs(self.objects) do
+            for _, o in pairs(self.objects) do
                 if o[fname] then o[fname](o, ...) end
             end
         end

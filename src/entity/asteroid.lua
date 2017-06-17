@@ -106,7 +106,6 @@ function Asteroid:blowup(damager)
     self.scene.groups.particleSystems:add(
         newParticles(self.x, self.y, lume.lerp(1, 16, (self.radius/30)^2), lume.lerp(.1, 1, self.radius/30), angle)
     )
-    -- self.scene.scores:add(self.scorePoints)
     self:die()
 end
 

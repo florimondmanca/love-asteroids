@@ -7,17 +7,17 @@ local Signal = require('lib.signal').new()
 
 local gameScene = require('core.GameScene'):extend()
 
+gameScene:set{
+    score = {
+        value = 0,
+        get = function(self, value) return value end,
+        set = function(self, new) return new end,
+        afterSet = function(self, value)
+            Signal:emit('changed-score', value) end,
+    }
+}
+
 function gameScene:setup()
-    -- self:set{
-    --     score = {
-    --         value = 0,
-    --         get = function(self, value) return value end,
-    --         set = function(self, new)
-    --             Signal:emit('changed-score', new)
-    --             return new end,
-    --         add = function(self, more) self:set(self.value + more) end
-    --     }
-    -- }
 
     -- object groups
     self:createGroup('shots')
@@ -26,12 +26,12 @@ function gameScene:setup()
     self:createGroup('pickups')
     self:createGroup('widgets')
 
-    -- self.groups.widgets:addAs('scoreLabel', require('core.widgets.TextLabel'){text=''})
+    self.groups.widgets:addAs('scoreLabel', require('core.widgets.TextLabel'){x=50, y=50, text='0'})
 
-    -- Signal:register('changed-score', function(score)
-    --     self.groups.widgets
-    --         .objects.scoreLabel:setText(tostring(score))
-    -- end)
+    Signal:register('changed-score', function(score)
+        self.groups.widgets
+            .objects.scoreLabel:setText(tostring(score))
+    end)
 
     -- init player's spaceship
     self:addAs('spaceShip', SpaceShip(self, {health = 5}))
@@ -56,6 +56,8 @@ function gameScene:update(dt)
             if collisions.circleToCircle(shot, asteroid) then
                 self:sendMessage{from=shot, to=asteroid, subject='blowup'}
                 self:sendMessage{from=asteroid, to=shot, subject='collide_asteroid'}
+                -- increment score
+                self.score = self.score + asteroid.scorePoints
                 -- randomly create a pickup
                 if love.math.random() < .1 then
                     local p = Pickup(asteroid.x, asteroid.y)
@@ -73,7 +75,6 @@ function gameScene:update(dt)
                 end
             end
         end
-
     end
     -- check collisions between asteroids and the player
     for _, asteroid in ipairs(self.groups.asteroids.objects) do
