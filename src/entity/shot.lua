@@ -31,7 +31,7 @@ function Shot:init(scene, x, y, angle)
 end
 
 function Shot:die()
-    self.scene:removeShot(self)
+    self.scene.groups.shots:remove(self)
 end
 
 function Shot:update(dt)

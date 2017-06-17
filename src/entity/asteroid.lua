@@ -1,8 +1,6 @@
 local class = require 'lib.class'
 local lume = require 'lib.lume'
 
-local Pickup = require 'core.Pickup'
-
 local w, h = love.graphics.getDimensions()
 
 local asteroidSheet = love.graphics.newImage('assets/img/asteroid4.png')
@@ -39,11 +37,14 @@ end
 
 
 local Asteroid = class()
-Asteroid.speed = 100
-Asteroid.radius = 21
-Asteroid.omega = 1
-Asteroid.rotation = 0
-Asteroid.dieRadius = 10
+Asteroid:set{
+    speed = 100,
+    radius = 21,
+    omega = 1,
+    rotation = 0,
+    dieRadius = 10,
+    scorePoints = 100
+}
 
 function Asteroid:init(scene, t)
     assert(scene, 'scene required')
@@ -86,23 +87,26 @@ end
 
 function Asteroid:die()
     -- create particles
-    self.scene:removeAsteroid(self)
+    self.scene.groups.asteroids:remove(self)
 end
 
 function Asteroid:blowup(damager)
     -- if asteroid is big enough, break it into pieces
-    local a = lume.angle(self.x, self.y, damager.x, damager.y)
+    local angle = lume.angle(self.x, self.y, damager.x, damager.y)
     if self.radius/2 >= Asteroid.dieRadius then
-        self.scene:addAsteroid(Asteroid.newRandom(self.scene, {
+        self.scene.groups.asteroids:add(Asteroid.newRandom(self.scene, {
             x = self.x, y = self.y,
-            angle = a + math.pi/2, radius = self.radius/2
+            angle = angle + math.pi/2, radius = self.radius/2
         }))
-        self.scene:addAsteroid(Asteroid.newRandom(self.scene, {
+        self.scene.groups.asteroids:add(Asteroid.newRandom(self.scene, {
             x = self.x, y = self.y,
-            angle = a - math.pi/2, radius = self.radius/2
+            angle = angle - math.pi/2, radius = self.radius/2
         }))
     end
-    newParticles(self.x, self.y, lume.lerp(1, 16, (self.radius/30)^2), lume.lerp(.1, 1, self.radius/30), a)
+    self.scene.groups.particleSystems:add(
+        newParticles(self.x, self.y, lume.lerp(1, 16, (self.radius/30)^2), lume.lerp(.1, 1, self.radius/30), angle)
+    )
+    -- self.scene.scores:add(self.scorePoints)
     self:die()
 end
 
@@ -134,10 +138,6 @@ end
 function Asteroid:onMessage(m)
     if m.subject == 'blowup' then
         self:blowup(m.from)
-        return true
-    end
-    if m.subject == 'die' then
-        self:die()
         return true
     end
 end

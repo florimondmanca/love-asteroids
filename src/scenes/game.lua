@@ -1,18 +1,37 @@
 local collisions = require 'core.collisions'
-
-local SpaceShip = require 'entity.SpaceShip'
-local Asteroid = require 'entity.Asteroid'
 local KeyTrigger = require 'core.KeyTrigger'
 local Pickup = require 'core.Pickup'
+local SpaceShip = require 'entity.SpaceShip'
+local Asteroid = require 'entity.Asteroid'
+local Signal = require('lib.signal').new()
 
 local gameScene = require('core.GameScene'):extend()
 
 function gameScene:setup()
+    -- self:set{
+    --     score = {
+    --         value = 0,
+    --         get = function(self, value) return value end,
+    --         set = function(self, new)
+    --             Signal:emit('changed-score', new)
+    --             return new end,
+    --         add = function(self, more) self:set(self.value + more) end
+    --     }
+    -- }
+
     -- object groups
-    self:createGroup('shot')
-    self:createGroup('asteroid')
-    self:createGroup('particleSystem')
-    self:createGroup('pickup')
+    self:createGroup('shots')
+    self:createGroup('asteroids')
+    self:createGroup('particleSystems')
+    self:createGroup('pickups')
+    self:createGroup('widgets')
+
+    -- self.groups.widgets:addAs('scoreLabel', require('core.widgets.TextLabel'){text=''})
+
+    -- Signal:register('changed-score', function(score)
+    --     self.groups.widgets
+    --         .objects.scoreLabel:setText(tostring(score))
+    -- end)
 
     -- init player's spaceship
     self:addAs('spaceShip', SpaceShip(self, {health = 5}))
@@ -24,7 +43,7 @@ function gameScene:setup()
 
     -- create asteroids
     for _ = 1, 30 do
-        self:addAsteroid(Asteroid.newRandomAtBorders(self))
+        self.groups.asteroids:add(Asteroid.newRandomAtBorders(self))
     end
 end
 
@@ -32,8 +51,8 @@ local update = gameScene.update
 function gameScene:update(dt)
     update(self, dt)
     -- check collisions between shots and asteroids
-    for _, asteroid in ipairs(self.objects.asteroidGroup.objects) do
-        for _, shot in ipairs(self.objects.shotGroup.objects) do
+    for _, asteroid in ipairs(self.groups.asteroids.objects) do
+        for _, shot in ipairs(self.groups.shots.objects) do
             if collisions.circleToCircle(shot, asteroid) then
                 self:sendMessage{from=shot, to=asteroid, subject='blowup'}
                 self:sendMessage{from=asteroid, to=shot, subject='collide_asteroid'}
@@ -47,9 +66,9 @@ function gameScene:update(dt)
                         end)
                     end
                     p.lifetime = 5
-                    self:addPickup(p)
+                    self.groups.pickups:add(p)
                     self.objects.timer:after(p.lifetime, function()
-                        self:removePickup(p)
+                        self.groups.pickups:remove(p)
                     end)
                 end
             end
@@ -57,7 +76,7 @@ function gameScene:update(dt)
 
     end
     -- check collisions between asteroids and the player
-    for _, asteroid in ipairs(self.objects.asteroidGroup.objects) do
+    for _, asteroid in ipairs(self.groups.asteroids.objects) do
         if collisions.circleToCircle(asteroid, self.objects.spaceShip) then
             self:sendMessage{
                 from=asteroid, to=self.objects.spaceShip,
@@ -71,10 +90,10 @@ function gameScene:update(dt)
         end
     end
     -- check collisions between player and pickups
-    for _, pickup in ipairs(self.objects.pickupGroup.objects) do
+    for _, pickup in ipairs(self.groups.pickups.objects) do
         if collisions.circleToCircle(pickup, self.objects.spaceShip) then
             pickup:onCollected(self.objects.spaceShip)
-            self:removePickup(pickup)
+            self.groups.pickups:remove(pickup)
         end
     end
 end

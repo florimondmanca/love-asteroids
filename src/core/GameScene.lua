@@ -11,6 +11,7 @@ local GameScene = class()
 
 function GameScene:init()
     self.objects = {}
+    self.groups = {}
     self.messageQueue = MessageQueue()
     self.camera = Camera()
     self:addAs('timer', require('core.Timer').global)
@@ -25,6 +26,9 @@ for _, fname in ipairs(CALLBACKS) do
     GameScene[fname] = function(self, ...)
         for _, o in pairs(self.objects) do
             if o[fname] then o[fname](o, ...) end
+        end
+        for _, g in pairs(self.groups) do
+            if g[fname] then g[fname](g, ...) end
         end
     end
 end
@@ -44,16 +48,7 @@ end
 
 --- registers an object to the GameScene
 function GameScene:add(o)
-    lume.push(self.objects, o)
-    return o
-end
-
---- adds an object to a labelled group
--- if group doesn't exist, it is created
-function GameScene:addTo(group, o)
-    if not self.objects[group] then self:addAs(group, GameScene.group()) end
-    self.objects[group]:add(o)
-    return o
+    return lume.push(self.objects, o)
 end
 
 --- registers a labelled object to the GameScene
@@ -68,17 +63,12 @@ function GameScene:remove(o)
     lume.remove(self.objects, o)
 end
 
---- removes an object from a labelled group
-function GameScene:removeFrom(group, o)
-    lume.remove(self.objects[group].objects, o)
-end
-
 --- creates and returns a new group (does not add register it to the GameScene)
 function GameScene.group()
     local group = {objects = {}}
     group.add = GameScene.add
+    group.addAs = GameScene.addAs
     group.remove = GameScene.remove
-    group.set = GameScene.set
 
     -- define callbacks
     for _, fname in ipairs(CALLBACKS) do
@@ -94,13 +84,8 @@ end
 
 --- creates a new group and the associated add/remove helper methods
 function GameScene:createGroup(name)
-    local groupName = name .. 'Group'
-    -- create the group
-    self:addAs(groupName, GameScene.group())
-    -- create add/remove helper methods
-    local capName = name:sub(1, 1):upper() .. name:sub(2)
-    self['add' .. capName] = function(self, o) return self:addTo(groupName, o) end
-    self['remove' .. capName] = function(self, o) self:removeFrom(groupName, o) end
+    self.groups[name] = GameScene.group()
+    return self.groups[name]
 end
 
 function GameScene:sendMessage(t) self.messageQueue:add(t) end

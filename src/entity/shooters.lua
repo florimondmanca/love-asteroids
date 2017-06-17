@@ -11,7 +11,7 @@ local function map(container, func)
 end
 
 local function add(scene, shots)
-    for _, shot in ipairs(shots) do scene:addShot(shot) end
+    for _, shot in ipairs(shots) do scene.groups.shots:add(shot) end
     return shots
 end
 
