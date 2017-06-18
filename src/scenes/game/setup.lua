@@ -5,6 +5,13 @@ local collisions = require 'core.collisions'
 local Pickup = require 'entity.Pickup'
 local Asteroid = require 'entity.Asteroid'
 
+local function splitAsteroid(self, asteroid, damager)
+    local left, right, ps = asteroid:split(damager)
+    self:group('asteroids'):add(left)
+    self:group('asteroids'):add(right)
+    self:group('particleSystems'):add(ps)
+end
+
 return function() return {
     -- define scene class properties
     properties = {
@@ -21,7 +28,7 @@ return function() return {
         shots = {},
         asteroids = {init = function(self)
             for _ = 1, 30 do
-                self.groups.asteroids:add(Asteroid.newRandomAtBorders(self))
+                self:group('asteroids'):add(Asteroid.newRandomAtBorders())
             end
         end},
         particleSystems = {},
@@ -60,8 +67,9 @@ return function() return {
         },
         collision_asteroid_shot = {
             function(self, asteroid, shot)
-                shot:die()
-                asteroid:blowup(shot)
+                splitAsteroid(self, asteroid, shot)
+                shot:kill()
+                asteroid:kill()
                 -- increment score
                 self.score = self.score + asteroid.scorePoints
                 -- randomly create a pickup
@@ -74,9 +82,9 @@ return function() return {
                         end)
                     end
                     p.lifetime = 5
-                    self.groups.pickups:add(p)
+                    self:group('pickups'):add(p)
                     self.objects.timer:after(p.lifetime, function()
-                        self.groups.pickups:remove(p)
+                        p:kill()
                     end)
                 end
                 -- play a sound
@@ -85,24 +93,27 @@ return function() return {
         },
         collision_asteroid_player = {
             function(self, asteroid, player)
-                asteroid:blowup(player)
+                splitAsteroid(self, asteroid, player)
+                asteroid:kill()
                 self.camera:shake(self.objects.timer, (asteroid.radius/30)^2)
-                -- play a sound
-                love.audio.play('assets/audio/collision.wav', 'static', false, .5)
+                if player:damage(-1) then
+                    love.audio.play('assets/audio/player_dead.wav', 'static', false, .7)
+                else
+                    love.audio.play('assets/audio/collision.wav', 'static', false, .4)
+                end
             end,
         },
         changed_score = {
             function(self, score)
-                self.groups.widgets
-                    .objects.scoreLabel:setText(tostring(score))
+                self:group('widgets').objects.scoreLabel:setText(tostring(score))
             end,
         }
     },
     updateActions = {
         function(self)
             -- check collisions between shots and asteroids
-            for _, asteroid in ipairs(self.groups.asteroids.objects) do
-                for _, shot in ipairs(self.groups.shots.objects) do
+            for _, asteroid in self:each('asteroids') do
+                for _, shot in self:each('shots') do
                     if collisions.circleToCircle(shot, asteroid) then
                         Signal.emit('collision_asteroid_shot', self, asteroid, shot)
                     end
@@ -111,7 +122,7 @@ return function() return {
         end,
         function(self)
             -- check collisions between asteroids and the player
-            for _, asteroid in ipairs(self.groups.asteroids.objects) do
+            for _, asteroid in self:each('asteroids') do
                 if collisions.circleToCircle(asteroid, self.objects.spaceShip) then
                     Signal.emit('collision_asteroid_player', self, asteroid, self.objects.spaceShip)
                 end
@@ -119,10 +130,10 @@ return function() return {
         end,
         function(self)
             -- check collisions between player and pickups
-            for _, pickup in ipairs(self.groups.pickups.objects) do
+            for _, pickup in self:each('pickups') do
                 if collisions.circleToCircle(pickup, self.objects.spaceShip) then
                     pickup:onCollected(self.objects.spaceShip)
-                    self.groups.pickups:remove(pickup)
+                    self:group('pickups'):remove(pickup)
                 end
             end
         end,

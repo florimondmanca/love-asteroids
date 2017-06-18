@@ -1,6 +1,6 @@
-local class = require 'lib.class'
+local Entity = require 'core.Entity'
 
-local Pickup = class()
+local Pickup = Entity:extend()
 Pickup:set{
     radius = 5,
     lifetime = 5,
@@ -8,6 +8,7 @@ Pickup:set{
 }
 
 function Pickup:init(x, y)
+    Entity.init(self)
     assert(x, 'x required')
     assert(y, 'y required')
     self.x = x

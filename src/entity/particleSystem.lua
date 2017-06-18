@@ -1,9 +1,9 @@
-local class = require 'lib.class'
+local Entity = require 'core.Entity'
 
-local particleSystem = class()
+local particleSystem = Entity:extend()
 
-function particleSystem:init(scene, texture, buffer, getX, getY, initFunc)
-    self.scene = scene
+function particleSystem:init(texture, buffer, getX, getY, initFunc)
+    Entity.init(self)
     self.getX, self.getY = getX, getY
     self.system = love.graphics.newParticleSystem(texture, buffer)
     initFunc(self.system)
@@ -12,7 +12,7 @@ end
 function particleSystem:update(dt)
     self.system:update(dt)
     if self.system:getCount() == 0 then
-        self.scene.groups.particleSystems:remove(self)
+        self:kill()
     end
 end
 

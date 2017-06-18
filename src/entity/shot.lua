@@ -1,10 +1,10 @@
-local class = require 'lib.class'
 local lume = require 'lib.lume'
+local Entity = require 'core.Entity'
 
 local timer = require('core.Timer').global
 local w, h = love.graphics.getDimensions()
 
-local Shot = class()
+local Shot = Entity:extend()
 
 Shot:set{
     radius = 3,
@@ -13,12 +13,11 @@ Shot:set{
     color = {100, 255, 200}
 }
 
-function Shot:init(scene, x, y, angle)
-    assert(scene, 'scene required')
+function Shot:init(x, y, angle)
+    Entity.init(self)
     assert(x, 'x required')
     assert(y, 'y required')
     assert(angle, 'angle required')
-    self.scene = scene
     self.x = x
     self.y = y
     self.vx = self.speed * math.cos(angle)
@@ -30,18 +29,14 @@ function Shot:init(scene, x, y, angle)
     end)
 end
 
-function Shot:die()
-    self.scene.groups.shots:remove(self)
-end
-
 function Shot:update(dt)
     self.x = lume.loop(self.x + self.vx * dt, 0, w, self.radius)
     self.y = lume.loop(self.y + self.vy * dt, 0, h, self.radius)
     self.time = self.time + dt
-    if self.time > self.lifetime then
-        self:die()
-    end
     self.color = {100, 255, 200, self.opacity}
+    if self.time > self.lifetime then
+        self:kill()
+    end
 end
 
 function Shot:draw()

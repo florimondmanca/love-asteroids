@@ -1,12 +1,12 @@
-local class = require 'lib.class'
 local lume = require 'lib.lume'
+local Entity = require 'core.Entity'
 
 local shooters = require 'entity.shooters'
 local QuantityBar = require 'entity.QuantityBar'
 
 local w, h = love.graphics.getDimensions()
 
-local SpaceShip = class()
+local SpaceShip = Entity:extend()
 
 SpaceShip:set{
     image = love.graphics.newImage('assets/img/spaceship.png'),
@@ -48,8 +48,10 @@ SpaceShip:set{
 }
 
 function SpaceShip:init(t)
+    Entity.init(self)
     assert(t.scene, 'scene required')
     self.scene = t.scene
+    t.scene = nil
     if t.health then
         if type(t.health) == 'number' then t.health = {max = t.health} end
     end
@@ -135,17 +137,11 @@ function SpaceShip:draw()
     love.graphics.pop()
 end
 
-function SpaceShip:onMessage(m)
-    if m.subject == 'collide_asteroid' then
-        self.healthBar:addQuantity(m.data)
-        if self.healthBar.quantity <= 0 then
-            love.audio.play('assets/audio/player_dead.wav', 'static', false, .5)
-            self:resetPos()
-            self.shooter = 'simple'
-            self.healthBar.quantity = self.healthBar.max
-        else
-            love.audio.play('assets/audio/collision.wav', 'static', false, .3)
-        end
+function SpaceShip:damage(value)
+    self.healthBar:addQuantity(value)
+    if self.healthBar.quantity <= 0 then
+        self:resetPos()
+        self.healthBar.quantity = self.healthBar.max
         return true
     end
 end

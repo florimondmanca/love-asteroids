@@ -1,5 +1,5 @@
-local class = require 'lib.class'
 local lume = require 'lib.lume'
+local Entity = require 'core.Entity'
 
 local w, h = love.graphics.getDimensions()
 
@@ -14,9 +14,9 @@ local particleImage = love.graphics.newImage('assets/img/particle_triangle.png')
 
 -- generates new particles from an asteroid explosion
 -- size : 0 (minimal size) - 1 (maximum size)
-local function newParticles(scene, x, y, number, size, angle)
+local function newParticles(x, y, number, size, angle)
     number = number or 16
-    return require('entity.ParticleSystem'):new(scene, particleImage, number,
+    return require('entity.ParticleSystem'):new(particleImage, number,
     function() return x end, function() return y end,
     function(ps)
         ps:setParticleLifetime(.1, 1)
@@ -36,7 +36,7 @@ local function newParticles(scene, x, y, number, size, angle)
 end
 
 
-local Asteroid = class()
+local Asteroid = Entity:extend()
 Asteroid:set{
     speed = 100,
     radius = 21,
@@ -46,12 +46,11 @@ Asteroid:set{
     scorePoints = 100
 }
 
-function Asteroid:init(scene, t)
-    assert(scene, 'scene required')
+function Asteroid:init(t)
+    Entity.init(self)
     assert(t.x, 'x required')
     assert(t.y, 'y required')
     assert(t.angle, 'angle required')
-    self.scene = scene
     self.x = t.x
     self.y = t.y
     self.speed = t.speed or Asteroid.speed
@@ -63,17 +62,17 @@ function Asteroid:init(scene, t)
     self.vy = self.speed * math.sin(t.angle)
 end
 
-function Asteroid.newRandom(scene, t)
+function Asteroid.newRandom(t)
     t = t or {}
     t.radius = lume.noise(t.radius or Asteroid.radius, .2)
     t.speed = lume.noise(t.speed or Asteroid.speed, .5)
     t.omega = lume.noise(Asteroid.omega, .5)
     t.rotation = lume.random(0, 2*math.pi)
-    return Asteroid(scene, t)
+    return Asteroid(t)
 end
 
-function Asteroid.newRandomAtBorders(scene)
-    local a = Asteroid.newRandom(scene, {x = 0, y=0, angle=lume.random(2*math.pi)})
+function Asteroid.newRandomAtBorders()
+    local a = Asteroid.newRandom{x = 0, y=0, angle=lume.random(2*math.pi)}
     local r = a.radius
     local tlerp = {
         0, (h + 2*r) / (2*w + 2*h + 8*r),
@@ -85,30 +84,23 @@ function Asteroid.newRandomAtBorders(scene)
     return a
 end
 
-function Asteroid:die()
-    self.scene.groups.asteroids:remove(self)
-end
-
-function Asteroid:blowup(damager)
+function Asteroid:split(damager)
     -- if asteroid is big enough, break it into pieces
     local angle = lume.angle(self.x, self.y, damager.x, damager.y)
-    if self.radius/2 >= Asteroid.dieRadius then
-        self.scene.groups.asteroids:add(Asteroid.newRandom(self.scene, {
-            x = self.x, y = self.y,
-            angle = angle + math.pi/2, radius = self.radius/2
-        }))
-        self.scene.groups.asteroids:add(Asteroid.newRandom(self.scene, {
-            x = self.x, y = self.y,
-            angle = angle - math.pi/2, radius = self.radius/2
-        }))
-    end
-    self.scene.groups.particleSystems:add(
-        newParticles(self.scene, self.x, self.y,
-            lume.lerp(1, 16, (self.radius/30)^2),
-            lume.lerp(.1, 1, self.radius/30), angle
-        )
+    local left = Asteroid.newRandom{
+        x = self.x, y = self.y,
+        angle = angle + math.pi/2, radius = self.radius/2
+    }
+    local right = Asteroid.newRandom{
+        x = self.x, y = self.y,
+        angle = angle - math.pi/2, radius = self.radius/2
+    }
+    local ps = newParticles(self.x, self.y,
+        lume.lerp(1, 16, (self.radius/30)^2),
+        lume.lerp(.1, 1, self.radius/30), angle
     )
-    self:die()
+    local divides = self.radius/2 >= Asteroid.dieRadius
+    return divides and left or nil, divides and right or nil, ps
 end
 
 function Asteroid:update(dt)
