@@ -51,6 +51,10 @@ local function build(sceneFunc)
         end
     end
 
+    if setupTable.enter then
+        function scene:enter() setupTable.enter(self) end
+    end
+
     return scene
 
 end

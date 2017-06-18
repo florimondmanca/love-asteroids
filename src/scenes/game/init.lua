@@ -137,6 +137,9 @@ return function() return {
                 end
             end
         end,
-    }
+    },
+    enter = function()
+        love.graphics.setBackgroundColor(40, 45, 55)
+    end,
 }
 end
