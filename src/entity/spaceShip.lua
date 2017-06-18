@@ -1,6 +1,5 @@
 local class = require 'lib.class'
 local lume = require 'lib.lume'
-local Signal = require 'lib.signal'
 
 local shooters = require 'entity.shooters'
 local QuantityBar = require 'entity.QuantityBar'
@@ -48,9 +47,9 @@ SpaceShip:set{
     accTorque = 30,
 }
 
-function SpaceShip:init(scene, t)
-    assert(scene, 'scene required')
-    self.scene = scene
+function SpaceShip:init(t)
+    assert(t.scene, 'scene required')
+    self.scene = t.scene
     if t.health then
         if type(t.health) == 'number' then t.health = {max = t.health} end
     end
@@ -62,14 +61,10 @@ function SpaceShip:init(scene, t)
         else print('warning: unknown property ' .. k .. ' for SpaceShip') end
     end
     self.shooter = 'simple'
-    Signal.register('fire_laser', function()
-        self.shooter(self.scene, self)
-        love.audio.play('assets/audio/shot' .. lume.randomchoice{1, 2, 3} .. '.wav', 'static', false, .7)
-    end)
-    Signal.register('collision-asteroid-player', function(_, player)
-        if player ~= self then return end
-        love.audio.play('assets/audio/collision.wav', 'static', false, .5)
-    end)
+end
+
+function SpaceShip:shoot()
+    self.shooter(self.scene, self)
 end
 
 function SpaceShip:resetPos()

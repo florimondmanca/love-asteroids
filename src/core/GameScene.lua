@@ -13,6 +13,7 @@ function GameScene:init()
     self.objects = {}
     self.groups = {}
     self.messageQueue = MessageQueue()
+    self.updateActions = {}
     self.camera = Camera()
     self:addAs('timer', require('core.Timer').global)
     self:setup()
@@ -33,9 +34,14 @@ for _, fname in ipairs(CALLBACKS) do
     end
 end
 
+function GameScene:addUpdateAction(action)
+    lume.push(self.updateActions, action)
+end
+
 local update = GameScene.update
 function GameScene:update(dt)
     update(self, dt)
+    for _, action in ipairs(self.updateActions) do action(self) end
     self.messageQueue:dispatch()
 end
 

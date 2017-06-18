@@ -1,6 +1,5 @@
 local class = require 'lib.class'
 local lume = require 'lib.lume'
-local Signal = require 'lib.signal'
 
 local timer = require('core.Timer').global
 local w, h = love.graphics.getDimensions()
@@ -28,9 +27,6 @@ function Shot:init(scene, x, y, angle)
     self.opacity = 255
     timer:after(.7*self.lifetime, function()
         timer:tween(.3*self.lifetime, self, {opacity = 0}, 'in-exp')
-    end)
-    Signal.register('collision-asteroid-shot', function(_, shot)
-        if shot == self then self:die() end
     end)
 end
 

@@ -1,25 +1,26 @@
-local particleSystem = {}
+local class = require 'lib.class'
 
-function particleSystem.new(texture, buffer, getX, getY, initFunc)
-    local ps = {system = love.graphics.newParticleSystem(texture, buffer)}
+local particleSystem = class()
 
-    initFunc(ps.system)
-
-    function ps:update(dt)
-        ps.system:update(dt)
-        if ps.system:getCount() == 0 then
-            require('scenes.game').groups.particleSystems:remove(ps)
-        end
-    end
-
-    function ps:draw()
-        love.graphics.setColor(255, 255, 255)
-        love.graphics.draw(self.system, getX(), getY())
-    end
-
-    function ps:stop() self.system:stop() end
-
-    return ps
+function particleSystem:init(scene, texture, buffer, getX, getY, initFunc)
+    self.scene = scene
+    self.getX, self.getY = getX, getY
+    self.system = love.graphics.newParticleSystem(texture, buffer)
+    initFunc(self.system)
 end
+
+function particleSystem:update(dt)
+    self.system:update(dt)
+    if self.system:getCount() == 0 then
+        self.scene.groups.particleSystems:remove(self)
+    end
+end
+
+function particleSystem:draw()
+    love.graphics.setColor(255, 255, 255)
+    love.graphics.draw(self.system, self.getX(), self.getY())
+end
+
+function particleSystem:stop() self.system:stop() end
 
 return particleSystem

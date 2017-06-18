@@ -1,6 +1,5 @@
 local class = require 'lib.class'
 local lume = require 'lib.lume'
-local Signal = require 'lib.signal'
 
 local w, h = love.graphics.getDimensions()
 
@@ -15,9 +14,9 @@ local particleImage = love.graphics.newImage('assets/img/particle_triangle.png')
 
 -- generates new particles from an asteroid explosion
 -- size : 0 (minimal size) - 1 (maximum size)
-local function newParticles(x, y, number, size, angle)
+local function newParticles(scene, x, y, number, size, angle)
     number = number or 16
-    return require('entity.ParticleSystem').new(particleImage, number,
+    return require('entity.ParticleSystem'):new(scene, particleImage, number,
     function() return x end, function() return y end,
     function(ps)
         ps:setParticleLifetime(.1, 1)
@@ -62,15 +61,6 @@ function Asteroid:init(scene, t)
     self.quad = lume.randomchoice(asteroidQuads)
     self.vx = self.speed * math.cos(t.angle)
     self.vy = self.speed * math.sin(t.angle)
-    Signal.register('collision-asteroid-shot', function(asteroid, shot)
-        if asteroid ~= self then return end
-        self:blowup(shot)
-        love.audio.play('assets/audio/asteroid_blowup.wav', 'static', false, .7)
-    end)
-    Signal.register('collision-asteroid-player', function(asteroid, player)
-        if asteroid ~= self then return end
-        self:blowup(player)
-    end)
 end
 
 function Asteroid.newRandom(scene, t)
@@ -113,7 +103,10 @@ function Asteroid:blowup(damager)
         }))
     end
     self.scene.groups.particleSystems:add(
-        newParticles(self.x, self.y, lume.lerp(1, 16, (self.radius/30)^2), lume.lerp(.1, 1, self.radius/30), angle)
+        newParticles(self.scene, self.x, self.y,
+            lume.lerp(1, 16, (self.radius/30)^2),
+            lume.lerp(.1, 1, self.radius/30), angle
+        )
     )
     self:die()
 end
