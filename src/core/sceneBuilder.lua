@@ -11,9 +11,10 @@ local function buildObject(scene, container, key, objectTable)
     end
 end
 
-local function build(src)
+local function build(sceneFunc)
     local scene = require('core.GameScene'):new()
-    local setupTable = require(src .. '.setup')()
+    if type(sceneFunc) == 'string' then sceneFunc = require(sceneFunc) end
+    local setupTable = sceneFunc()
 
     function scene:setup()
         -- setup properties

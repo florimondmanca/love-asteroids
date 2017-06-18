@@ -49,10 +49,6 @@ function GameScene:group(name)
     return self.objects['group_' .. name]
 end
 
-function GameScene:object(name)
-    return self.objects[name]
-end
-
 function GameScene:each(groupName)
     if groupName then return self:group(groupName):each()
     else return next, self.objects end

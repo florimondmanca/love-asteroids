@@ -26,7 +26,7 @@ end
 function menuScene:enter()
     love.graphics.setBackgroundColor(40, 45, 55)
     self.objects.timer:after(5, function()
-        gamestate.switch(require('core.sceneBuilder').build('scenes.game'))
+        gamestate.switch(require('core.SceneBuilder').build('scenes.game'))
     end)
     self.objects.logo.x = -500
     self.objects.timer:tween(1, self.objects.logo, {x=w/2}, 'out-exp')
