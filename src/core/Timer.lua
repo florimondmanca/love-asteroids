@@ -94,6 +94,14 @@ function Timer:tween(duration, subject, target, method, after)
     end, after)
 end
 
+function Timer:script(f)
+	local co = coroutine.wrap(f)
+	co(function(t)
+		self:after(t, co)
+		coroutine.yield()
+	end)
+end
+
 -- prevents a timer from executing an action in the future
 function Timer:cancel(action)
     lume.remove(self.actions, action)

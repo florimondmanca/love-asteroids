@@ -4,9 +4,14 @@ local Signal = require 'lib.signal'
 local GameScene = require 'core.GameScene'
 
 local function buildObject(scene, container, key, objectTable)
-    local args = objectTable.arguments
-    if type(args) == 'function' then args = args(scene) end
-    local object = require(objectTable.script)(args)
+    local object
+    if objectTable.arguments and objectTable.script then
+        local args = objectTable.arguments
+        if type(args) == 'function' then args = args(scene) end
+        object = require(objectTable.script)(args)
+    else
+        object = objectTable
+    end
     if type(key) == 'string' then
         container:addAs(key, object)
     else

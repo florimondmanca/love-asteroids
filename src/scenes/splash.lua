@@ -24,13 +24,13 @@ S:addObjectAs('logo', {
 
 S:addCallback('enter', function(self)
     love.graphics.setBackgroundColor(40, 45, 55)
-    self.objects.timer:after(5, function()
-        gamestate.switch(require('scenes/game'):build())
-    end)
-    self.objects.logo.x = -500
-    self.objects.timer:tween(1, self.objects.logo, {x=w/2}, 'out-exp')
-    self.objects.timer:after(4, function()
+    self.objects.timer:script(function(wait)
+        self.objects.logo.x = -500
+        self.objects.timer:tween(1, self.objects.logo, {x=w/2}, 'out-exp')
+        wait(3)
         self.objects.timer:tween(1, self.objects.logo, {x = w+500}, 'in-exp')
+        wait(1)
+        gamestate.switch(require('scenes/game'):build())
     end)
 end)
 
