@@ -1,4 +1,7 @@
+local class = require 'lib.class'
+local lume = require 'lib.lume'
 local Signal = require 'lib.signal'
+local GameScene = require 'core.GameScene'
 
 local function buildObject(scene, container, key, objectTable)
     local args = objectTable.arguments
@@ -11,52 +14,81 @@ local function buildObject(scene, container, key, objectTable)
     end
 end
 
-local function build(sceneFunc)
-    local scene = require('core.GameScene'):new()
-    if type(sceneFunc) == 'string' then sceneFunc = require(sceneFunc) end
-    local setupTable = sceneFunc()
-
-    function scene:setup()
-        -- setup properties
-        for name, propertyTable in pairs(setupTable.properties or {}) do
-            self:set(name, propertyTable)
-        end
-
-        -- create groups
-        for name, groupTable in pairs(setupTable.groups or {}) do
-            local group = scene:createGroup(name)
-            if groupTable.init then
-                groupTable.init(scene)
-                groupTable.init = nil
-            end
-            -- build each object in the group
-            for key, objectTable in pairs(groupTable) do
-                buildObject(self, group, key, objectTable)
-            end
-        end
-
-        -- create objects
-        for key, objectTable in pairs(setupTable.objects or {}) do
-            buildObject(self, self, key, objectTable)
-        end
-
-        -- register signals
-        for event, funcs in pairs(setupTable.signals or {}) do
-            for _, func in ipairs(funcs) do Signal.register(event, func) end
-        end
-
-        -- register update actions
-        for _, updateAction in pairs(setupTable.updateActions or {}) do
-            self:addUpdateAction(updateAction)
-        end
+local function buildGroup(scene, group, groupTable)
+    for key, objectTable in pairs(groupTable) do
+        buildObject(scene, group, key, objectTable)
     end
-
-    if setupTable.enter then
-        function scene:enter() setupTable.enter(self) end
-    end
-
-    return scene
-
 end
 
-return {build = build}
+local Builder = class()
+
+function Builder:init()
+    self.elements = {}  -- list of initializing functions f(scene)
+end
+
+function Builder:addProperty(name, pTable)
+    lume.push(self.elements, function(scene)
+        scene:set(name, pTable)
+    end)
+end
+
+function Builder:addGroup(name, initializer)
+    local initFunc
+    initializer = initializer or {}
+    if type(initializer) == 'table' then
+        local groupTable = initializer
+        initFunc = function(scene)
+            buildGroup(scene, scene:createGroup(name), groupTable)
+        end
+    elseif type(initializer) == 'function' then
+        initFunc = function(scene)
+            buildGroup(scene, scene:createGroup(name), {})
+            initializer(scene)
+        end
+    else
+        error('Invalid initializer: must be (object descripting) table or function')
+    end
+    lume.push(self.elements, initFunc)
+end
+
+function Builder:addObject(objectTable)
+    lume.push(self.elements, function(scene)
+        buildObject(scene, scene, nil, objectTable)
+    end)
+end
+
+function Builder:addObjectAs(name, objectTable)
+    lume.push(self.elements, function(scene)
+        buildObject(scene, scene, name, objectTable)
+    end)
+end
+
+function Builder:addSignalListener(name, listener)
+    lume.push(self.elements, function()
+        Signal.register(name, listener)
+    end)
+end
+
+function Builder:addUpdateAction(action)
+    lume.push(self.elements, function(scene)
+        scene:addUpdateAction(action)
+    end)
+end
+
+function Builder:addCallback(name, func)
+    lume.push(self.elements, function(scene)
+        scene[name] = func
+    end)
+end
+
+function Builder:build()
+    -- create a new scene subclass
+    local scene = GameScene:extend()
+    local elements = self.elements
+    function scene:setup()
+        for _, func in ipairs(elements) do func(self) end
+    end
+    return scene
+end
+
+return Builder
