@@ -48,8 +48,7 @@ S:addGroup('widgets', {
 
 S:addObjectAs('spaceShip', {
     script = 'entity.SpaceShip',
-    arguments = function(self) return {scene = self, health = 5} end,
-    effects = {shine.glowsimple()}
+    arguments = function(self) return {scene = self, health = 5} end
 })
 S:addObject{
     script = 'core.KeyTrigger',
@@ -133,7 +132,7 @@ S:addUpdateAction(function(self)
 end)
 
 S:addEffect(shine.colorgradesimple{grade={1, 1, 1.1}})
-S:addEffect(shine.vignette{radius=.9, opacity=1})
+S:addEffect(shine.vignette{radius=1, opacity=.5})
 
 S:addCallback('enter', function(self)
     love.graphics.setBackgroundColor(20, 25, 35)
