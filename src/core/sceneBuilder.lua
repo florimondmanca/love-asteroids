@@ -80,6 +80,12 @@ function Builder:addUpdateAction(action)
     end)
 end
 
+function Builder:addEffect(effect, name)
+    lume.push(self.elements, function(scene)
+        scene:addEffect(effect, name)
+    end)
+end
+
 function Builder:addCallback(name, func)
     lume.push(self.elements, function(scene)
         scene[name] = func

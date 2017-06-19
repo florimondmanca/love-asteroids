@@ -9,6 +9,7 @@ function GameScene:init()
     init(self)
     self.updateActions = {}
     self.camera = Camera()
+    self.effects = {}
     self:addAs('timer', require('core.Timer').global)
     self:setup()
 end
@@ -20,6 +21,11 @@ function GameScene:addUpdateAction(action)
     lume.push(self.updateActions, action)
 end
 
+function GameScene:addEffect(effect, key)
+    if key then self.effects[key] = effect end
+    lume.push(self.effects, effect)
+end
+
 local update = Pool.update
 function GameScene:update(dt)
     update(self, dt)
@@ -28,8 +34,14 @@ end
 
 local draw = GameScene.draw
 function GameScene:draw()
+    local fx
+    if #self.effects > 0 then
+        fx = lume.reduce(self.effects, function(a, b) return a:chain(b) end)
+    else
+        fx = function(func) func() end
+    end
     self.camera:set()
-    draw(self)
+    fx(function() draw(self) end)
     self.camera:unset()
 end
 

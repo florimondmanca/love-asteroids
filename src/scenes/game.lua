@@ -4,6 +4,7 @@ local Asteroid = require 'entity.Asteroid'
 local Pickup = require 'entity.Pickup'
 local collisions = require 'core.collisions'
 local SceneBuilder = require 'core.SceneBuilder'
+local shine = require 'lib.shine'
 
 local w, _ = love.graphics.getDimensions()
 
@@ -55,7 +56,7 @@ S:addObject{
 }
 
 S:addSignalListener('fire_laser', function(scene)
-    love.audio.play('assets/audio/shot' .. lume.randomchoice{1, 2, 3} .. '.wav', 'static', false, .7)
+    love.audio.play('assets/audio/shot' .. lume.randomchoice{1, 2, 3} .. '.wav', 'static', false, .5)
     scene.objects.spaceShip:shoot()
 end)
 
@@ -80,7 +81,7 @@ S:addSignalListener('collision_asteroid_shot', function(scene, asteroid, shot)
         end)
     end
     -- play a sound
-    love.audio.play('assets/audio/asteroid_blowup.wav', 'static', false, .7)
+    love.audio.play('assets/audio/asteroid_blowup.wav', 'static', false, .35)
 end)
 
 S:addSignalListener('collision_asteroid_player', function(scene, asteroid, player)
@@ -128,8 +129,11 @@ S:addUpdateAction(function(self)
     end
 end)
 
+S:addEffect(shine.glowsimple{sigma=5}, 'glow')
+S:addEffect(shine.vignette{radius=.8}, 'vignette')
+
 S:addCallback('enter', function(self)
-    love.graphics.setBackgroundColor(40, 45, 55)
+    love.graphics.setBackgroundColor(20, 25, 35)
 end)
 
 return S

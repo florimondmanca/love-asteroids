@@ -23,6 +23,7 @@ S:addObjectAs('logo', {
 })
 
 S:addCallback('enter', function(self)
+    love.audio.play('assets/audio/asteroids-ost.mp3', 'stream', true, .6)
     love.graphics.setBackgroundColor(40, 45, 55)
     self.objects.timer:script(function(wait)
         self.objects.logo.x = -500
