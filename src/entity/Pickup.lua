@@ -28,8 +28,10 @@ function Pickup:onCollected(object)
 end
 
 function Pickup:draw()
-    love.graphics.setColor(200, 200, 100)
-    love.graphics.circle('fill', self.x, self.y, self.radius, 20)
+    self:fxOn(function()
+        love.graphics.setColor(200, 200, 100)
+        love.graphics.circle('fill', self.x, self.y, self.radius, 20)
+    end)
 end
 
 return Pickup

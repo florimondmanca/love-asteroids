@@ -9,6 +9,9 @@ local function buildObject(scene, container, key, objectTable)
         local args = objectTable.arguments
         if type(args) == 'function' then args = args(scene) end
         object = require(objectTable.script)(args)
+        for name, fx in pairs(objectTable.effects or {}) do
+            object:addEffect(fx, type(name) == 'string' and name or nil)
+        end
     else
         object = objectTable
     end

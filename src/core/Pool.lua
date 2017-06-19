@@ -21,6 +21,7 @@ defineCallbacks(Pool)
 function Pool:init()
     self.objects = {}
     self.keys = {}
+    self.toRemove = {}
 end
 
 function Pool:add(o)
@@ -34,7 +35,18 @@ function Pool:addAs(key, o)
 end
 
 function Pool:remove(o)
-    lume.remove(self.objects, o)
+    o.dying = true
+end
+
+-- called once per frame
+function Pool:flush()
+    self.objects = lume.reject(self.objects, function(o) return o.dying end, true)
+end
+
+local update = Pool.update
+function Pool:update(dt)
+    self:flush()
+    update(self, dt)
 end
 
 function Pool:each()
