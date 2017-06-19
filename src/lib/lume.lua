@@ -265,6 +265,11 @@ function lume.array(...)
   return t
 end
 
+function lume.dict2array(d)
+    local t = {}
+    for _, v in pairs(d) do t[#t+1] = v end
+    return t
+end
 
 function lume.each(t, fn, ...)
   local iter = getiter(t)

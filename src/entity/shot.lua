@@ -13,15 +13,15 @@ Shot:set{
     color = {100, 255, 200}
 }
 
-function Shot:init(x, y, angle)
-    Entity.init(self)
-    assert(x, 'x required')
-    assert(y, 'y required')
-    assert(angle, 'angle required')
-    self.x = x
-    self.y = y
-    self.vx = self.speed * math.cos(angle)
-    self.vy = self.speed * math.sin(angle)
+function Shot:init(t)
+    Entity.init(self, t)
+    assert(t.x, 'x required')
+    assert(t.y, 'y required')
+    assert(t.angle, 'angle required')
+    self.x = t.x
+    self.y = t.y
+    self.vx = self.speed * math.cos(t.angle)
+    self.vy = self.speed * math.sin(t.angle)
     self.time = 0
     self.opacity = 255
     timer:after(.7*self.lifetime, function()

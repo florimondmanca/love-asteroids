@@ -18,20 +18,40 @@ local Pool = class()
 
 defineCallbacks(Pool)
 
-function Pool:init()
+function Pool:init(t)
+    t = t or {}
     self.objects = {}
+    self.effects = {}
     self.keys = {}
     self.toRemove = {}
+    self.z = t.z or 0
 end
 
 function Pool:add(o)
-    if o then self.objects[o] = o end
+    if o then
+        o.z = (o.z or 0) + self.z
+        self.objects[o] = o
+    end
     return o
 end
 
 function Pool:addAs(key, o)
+    o.z = (o.z or 0) + self.z
     self.objects[key] = o
     return o
+end
+
+function Pool:addEffect(effect, key)
+    if key then self.effects[key] = effect end
+    lume.push(self.effects, effect)
+end
+
+function Pool:fxOn(func)
+    local fx = function(f) f() end
+    if #self.effects > 0 then
+        fx = lume.reduce(self.effects, function(a, b) return a:chain(b) end)
+    end
+    fx(func)
 end
 
 function Pool:remove(o)
@@ -40,13 +60,25 @@ end
 
 -- called once per frame
 function Pool:flush()
-    self.objects = lume.reject(self.objects, function(o) return o.dying end, true)
+    local dying = lume.any(self.objects, function(o) return o.dying end)
+    if dying then
+        self.objects = lume.reject(self.objects, function(o) return o.dying end, true)
+    end
 end
 
 local update = Pool.update
 function Pool:update(dt)
     self:flush()
     update(self, dt)
+end
+
+-- local draw = Pool.draw
+function Pool:draw()
+    self:fxOn(function()
+        for _, o in ipairs(lume.sort(lume.dict2array(self.objects), 'z')) do
+            if o.draw then o.draw(o) end
+        end
+    end)
 end
 
 function Pool:each()

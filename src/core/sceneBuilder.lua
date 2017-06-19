@@ -23,7 +23,8 @@ local function buildObject(scene, container, key, objectTable)
 end
 
 local function buildGroup(scene, group, groupTable)
-    for key, objectTable in pairs(groupTable) do
+    for key, objectTable in pairs(groupTable.objects or {}) do
+        objectTable.z = (objectTable.z or 0) + (groupTable.z or 0)
         buildObject(scene, group, key, objectTable)
     end
 end
@@ -31,66 +32,59 @@ end
 local Builder = class()
 
 function Builder:init()
-    self.elements = {}  -- list of initializing functions f(scene)
+    self.funcs = {}  -- list of initializing functions <func(scene)>
 end
 
 function Builder:addProperty(name, pTable)
-    lume.push(self.elements, function(scene)
+    lume.push(self.funcs, function(scene)
         scene:set(name, pTable)
     end)
 end
 
-function Builder:addGroup(name, initializer)
-    local initFunc
-    initializer = initializer or {}
-    if type(initializer) == 'table' then
-        local groupTable = initializer
-        initFunc = function(scene)
-            buildGroup(scene, scene:createGroup(name), groupTable)
-        end
-    elseif type(initializer) == 'function' then
-        initFunc = function(scene)
-            buildGroup(scene, scene:createGroup(name), {})
-            initializer(scene)
-        end
-    else
-        error('Invalid initializer: must be (object descripting) table or function')
+function Builder:addGroup(name, groupTable)
+    groupTable = groupTable or {}
+    local initGroup = function() end
+    if groupTable.init then
+        initGroup = groupTable.init
     end
-    lume.push(self.elements, initFunc)
+    lume.push(self.funcs, function(scene)
+        buildGroup(scene, scene:createGroup(name, {z=groupTable.z}), groupTable)
+        initGroup(scene:group(name))
+    end)
 end
 
 function Builder:addObject(objectTable)
-    lume.push(self.elements, function(scene)
+    lume.push(self.funcs, function(scene)
         buildObject(scene, scene, nil, objectTable)
     end)
 end
 
 function Builder:addObjectAs(name, objectTable)
-    lume.push(self.elements, function(scene)
+    lume.push(self.funcs, function(scene)
         buildObject(scene, scene, name, objectTable)
     end)
 end
 
 function Builder:addSignalListener(name, listener)
-    lume.push(self.elements, function()
+    lume.push(self.funcs, function()
         Signal.register(name, listener)
     end)
 end
 
 function Builder:addUpdateAction(action)
-    lume.push(self.elements, function(scene)
+    lume.push(self.funcs, function(scene)
         scene:addUpdateAction(action)
     end)
 end
 
 function Builder:addEffect(effect, name)
-    lume.push(self.elements, function(scene)
+    lume.push(self.funcs, function(scene)
         scene:addEffect(effect, name)
     end)
 end
 
 function Builder:addCallback(name, func)
-    lume.push(self.elements, function(scene)
+    lume.push(self.funcs, function(scene)
         scene[name] = func
     end)
 end
@@ -98,9 +92,9 @@ end
 function Builder:build()
     -- create a new scene subclass
     local scene = GameScene:extend()
-    local elements = self.elements
+    local funcs = self.funcs
     function scene:setup()
-        for _, func in ipairs(elements) do func(self) end
+        for _, func in ipairs(funcs) do func(self) end
     end
     return scene
 end

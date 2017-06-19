@@ -5,9 +5,7 @@ local shooters = {}
 
 local function map(container, func)
     local result = {}
-    for _, object in ipairs(container) do
-        table.insert(result, func(object))
-    end
+    for _, object in ipairs(container) do table.insert(result, func(object)) end
     return result
 end
 
@@ -27,16 +25,20 @@ local function spread(angle, width, number)
     return angles
 end
 
-function shooters.simple(scene, body)
-    return add(scene, {Shot(body.x, body.y, body.angle)})
+local function mShot(x, y, angle, z)
+    return Shot{x = x, y=y, angle=angle, z=z}
 end
 
-function shooters.triple(scene, body)
-    return add(scene, map(spread(body.angle, math.pi/6, 3), function(a) return Shot(body.x, body.y, a) end))
+function shooters.simple(scene, body, z)
+    return add(scene, {mShot(body.x, body.y, body.angle, z)})
 end
 
-function shooters.quint(scene, body)
-    return add(scene, map(spread(body.angle, math.pi/4, 5), function(a) return Shot(body.x, body.y, a) end))
+function shooters.triple(scene, body, z)
+    return add(scene, map(spread(body.angle, math.pi/6, 3), function(a) return mShot(body.x, body.y, a, z) end))
+end
+
+function shooters.quint(scene, body, z)
+    return add(scene, map(spread(body.angle, math.pi/4, 5), function(a) return mShot(body.x, body.y, a, z) end))
 end
 
 return shooters

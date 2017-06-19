@@ -26,21 +26,23 @@ S:addProperty('score', {
 })
 
 S:addGroup('shots')
-S:addGroup('asteroids', function(self)
+S:addGroup('asteroids', {init=function(group)
     for _ = 1, 30 do
-        self:group('asteroids'):add(Asteroid.newRandomAtBorders())
+        group:add(Asteroid.newRandomAtBorders())
     end
-end)
+end})
 S:addGroup('particleSystems')
-S:addGroup('pickups')
+S:addGroup('pickups', {z=-1})
 S:addGroup('widgets', {
-    scoreLabel = {
-        script = 'core.widgets.Label',
-        arguments = {x=50, y=50, text='0', prefix='Score\n'}
-    },
-    timeCounter = {
-        script = 'core.widgets.TimeCounter',
-        arguments = {x = w-100, y = 50}
+    objects = {
+        scoreLabel = {
+            script = 'core.widgets.Label',
+            arguments = {x=50, y=50, text='0', prefix='Score\n'}
+        },
+        timeCounter = {
+            script = 'core.widgets.TimeCounter',
+            arguments = {x = w-100, y = 50}
+        }
     }
 })
 
@@ -69,7 +71,7 @@ S:addSignalListener('collision_asteroid_shot', function(scene, asteroid, shot)
     scene.score = scene.score + asteroid.scorePoints
     -- randomly create a pickup
     if love.math.random() < .1 then
-        local p = Pickup(asteroid.x, asteroid.y)
+        local p = Pickup{x=asteroid.x, y=asteroid.y}
         p.action = function(spaceShip)
             scene.objects.spaceShip.timer:during(5, function()
                 spaceShip.shooter = 'triple'

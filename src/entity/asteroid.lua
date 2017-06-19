@@ -47,7 +47,7 @@ Asteroid:set{
 }
 
 function Asteroid:init(t)
-    Entity.init(self)
+    Entity.init(self, t)
     assert(t.x, 'x required')
     assert(t.y, 'y required')
     assert(t.angle, 'angle required')
@@ -71,16 +71,17 @@ function Asteroid.newRandom(t)
     return Asteroid(t)
 end
 
-function Asteroid.newRandomAtBorders()
-    local a = Asteroid.newRandom{x = 0, y=0, angle=lume.random(2*math.pi)}
+function Asteroid.newRandomAtBorders(t)
+    t = t or {}
+    local a = Asteroid.newRandom{x = 0, y=0, angle=lume.random(2*math.pi), z=t.z}
     local r = a.radius
     local tlerp = {
         0, (h + 2*r) / (2*w + 2*h + 8*r),
         1/2, (2*h + w + 6*r) / (2*w + 2*h + 8*r), 1
     }
-    local t = lume.random()
-    a.x = lume.multilerp(tlerp, {-r, -r, w + r, w + r, -r}, t)
-    a.y = lume.multilerp(tlerp, {-r, h + r, h + r, -r, -r}, t)
+    local s = lume.random()
+    a.x = lume.multilerp(tlerp, {-r, -r, w + r, w + r, -r}, s)
+    a.y = lume.multilerp(tlerp, {-r, h + r, h + r, -r, -r}, s)
     return a
 end
 

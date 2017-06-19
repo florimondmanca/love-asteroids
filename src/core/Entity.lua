@@ -3,9 +3,11 @@ local lume = require 'lib.lume'
 
 local Entity = class()
 
-function Entity:init()
+function Entity:init(t)
+    t = t or {}
     self.groups = {}
     self.effects = {}
+    self.z = t.z or 0  -- layer
 end
 
 function Entity:addEffect(fx, name)

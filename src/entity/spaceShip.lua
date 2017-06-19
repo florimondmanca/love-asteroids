@@ -49,7 +49,7 @@ SpaceShip:set{
 }
 
 function SpaceShip:init(t)
-    Entity.init(self)
+    Entity.init(self, t)
     assert(t.scene, 'scene required')
     self.scene = t.scene
     t.scene = nil
@@ -68,7 +68,7 @@ function SpaceShip:init(t)
 end
 
 function SpaceShip:shoot()
-    self.shooter(self.scene, self)
+    self.shooter(self.scene, self, self.z)
 end
 
 function SpaceShip:resetPos()
