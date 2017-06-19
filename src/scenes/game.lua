@@ -1,6 +1,5 @@
 local Signal = require 'lib.signal'
 local lume = require 'lib.lume'
-local gamestate = require 'lib.gamestate'
 local Asteroid = require 'entity.Asteroid'
 local Pickup = require 'entity.Pickup'
 local collisions = require 'core.collisions'
