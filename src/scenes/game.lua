@@ -130,7 +130,7 @@ S:addUpdateAction(function(self)
     end
 end)
 
-S:addEffect(shine.colorgradesimple{grade={1.0, 1.1, 1.1}})
+S:addEffect(shine.colorgradesimple{grade={1, 1, 1.1}})
 S:addEffect(shine.vignette{radius=.9, opacity=1})
 
 S:addCallback('enter', function(self)
