@@ -1,5 +1,6 @@
 local lume = require 'lib.lume'
 local Entity = require 'core.Entity'
+local Timer = require 'core.Timer'
 
 local shooters = require 'entity.shooters'
 local QuantityBar = require 'entity.QuantityBar'
@@ -62,6 +63,7 @@ function SpaceShip:init(t)
         if SpaceShip[k] then self[k] = v
         else print('warning: unknown property ' .. k .. ' for SpaceShip') end
     end
+    self.timer = Timer()
     self.shooter = 'simple'
 end
 
@@ -97,6 +99,7 @@ function SpaceShip:addTorque(t)
 end
 
 function SpaceShip:update(dt)
+    self.timer:update(dt)
     -- apply forces/torque based on input
     if love.keyboard.isDown('up') then self:addForceV(self.accForce) end
     if love.keyboard.isDown('down') then self:addForceV(-self.accForce) end
@@ -142,6 +145,8 @@ function SpaceShip:damage(value)
     if self.healthBar.quantity <= 0 then
         self:resetPos()
         self.healthBar.quantity = self.healthBar.max
+        self.shooter = 'simple'
+        self.timer:clear()
         return true
     end
 end

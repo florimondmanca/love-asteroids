@@ -69,10 +69,9 @@ S:addSignalListener('collision_asteroid_shot', function(scene, asteroid, shot)
     if love.math.random() < .1 then
         local p = Pickup(asteroid.x, asteroid.y)
         p.action = function(spaceShip)
-            spaceShip.shooter = 'triple'
-            scene.objects.timer:after(5, function()
-                spaceShip.shooter = 'simple'
-            end)
+            scene.objects.spaceShip.timer:during(5, function()
+                spaceShip.shooter = 'triple'
+            end, function() spaceShip.shooter = 'simple' end)
         end
         p.lifetime = 5
         scene:group('pickups'):add(p)
