@@ -1,8 +1,9 @@
-local class = require 'lib.class'
+local Entity = require 'core.Entity'
 
-local ProgressRing = class()
+local ProgressRing = Entity:extend()
 
 function ProgressRing:init(t)
+    Entity.init(self, t)
     assert(t.x, 'x required')
     assert(t.y, 'y required')
     assert(t.radius, 'radius required')

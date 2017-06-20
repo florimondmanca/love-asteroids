@@ -1,6 +1,6 @@
-local class = require 'lib.class'
+local Entity = require 'core.Entity'
 
-local TimeCounter = class()
+local TimeCounter = Entity:extend()
 
 local function clockTime(seconds)
     seconds = tonumber(seconds)
@@ -14,6 +14,7 @@ local function clockTime(seconds)
 end
 
 function TimeCounter:init(t)
+    Entity.init(self, t)
     t = t or {}
     assert(t.x, 'x required')
     assert(t.y, 'y required')

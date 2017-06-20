@@ -1,6 +1,6 @@
-local class = require 'lib.class'
+local Entity = require 'core.Entity'
 
-local Label = class()
+local Label = Entity:extend()
 
 Label:set{
     text = {
@@ -12,6 +12,7 @@ Label:set{
 }
 
 function Label:init(t)
+    Entity.init(self, t)
     t = t or {}
     assert(t.x, 'x required')
     assert(t.y, 'y required')
@@ -23,7 +24,7 @@ function Label:init(t)
     self.text = t.text or ''
 end
 
-function Label:draw()
+function Label:render()
     love.graphics.setColor(255, 255, 255)
     love.graphics.draw(self.textObject, self.x, self.y)
 end

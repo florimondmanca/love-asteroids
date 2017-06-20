@@ -36,11 +36,11 @@ S:addGroup('pickups', {z=-1})
 S:addGroup('widgets', {
     objects = {
         scoreLabel = {
-            script = 'core.widgets.Label',
+            script = 'entity.widgets.Label',
             arguments = {x=50, y=50, text='0', prefix='Score\n'}
         },
         timeCounter = {
-            script = 'core.widgets.TimeCounter',
+            script = 'entity.widgets.TimeCounter',
             arguments = {x = w-100, y = 50}
         }
     }
@@ -131,7 +131,7 @@ S:addUpdateAction(function(self)
     end
 end)
 
-S:addEffect(shine.colorgradesimple{grade={1, 1, 1.1}})
+S:addEffect(shine.colorgradesimple{grade={1, .95, 1.05}})
 S:addEffect(shine.vignette{radius=1, opacity=.5})
 
 S:addCallback('enter', function(self)

@@ -115,7 +115,7 @@ function Asteroid:update(dt)
     self.y = lume.loop(self.y, 0, h, self.radius)
 end
 
-function Asteroid:draw()
+function Asteroid:render()
     love.graphics.setColor(255, 255, 255)
     -- -- debug circle
     -- love.graphics.setLineWidth(1)

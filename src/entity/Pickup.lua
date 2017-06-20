@@ -27,11 +27,9 @@ function Pickup:onCollected(object)
     self.action(object)
 end
 
-function Pickup:draw()
-    self:fxOn(function()
-        love.graphics.setColor(200, 200, 100)
-        love.graphics.circle('fill', self.x, self.y, self.radius, 20)
-    end)
+function Pickup:render()
+    love.graphics.setColor(200, 200, 100)
+    love.graphics.circle('fill', self.x, self.y, self.radius, 20)
 end
 
 return Pickup
