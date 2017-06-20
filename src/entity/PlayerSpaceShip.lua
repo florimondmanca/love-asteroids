@@ -1,3 +1,4 @@
+local lume = require 'lib.lume'
 local SpaceShip = require 'entity.SpaceShip'
 local QuantityBar = require 'entity.QuantityBar'
 
@@ -5,8 +6,10 @@ local QuantityBar = require 'entity.QuantityBar'
 local Player = SpaceShip:extend()
 
 function Player:init(t)
-    t = t or {}
-    t.image = love.graphics.newImage('assets/img/player.png')
+    t = lume.merge(t or {}, {
+        image = love.graphics.newImage('assets/img/player.png'),
+        frictionOn = true
+    })
     SpaceShip.init(self, t)
     self.healthBar = QuantityBar(10)
 end

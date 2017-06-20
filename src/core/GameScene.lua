@@ -23,7 +23,7 @@ end
 local update = Pool.update
 function GameScene:update(dt)
     update(self, dt)
-    for _, action in ipairs(self.updateActions) do action(self) end
+    for _, action in ipairs(self.updateActions) do action(self, dt) end
 end
 
 local draw = GameScene.draw
@@ -50,9 +50,12 @@ function GameScene:group(name)
 end
 
 local each = GameScene.each
+function GameScene:eachObject() return each(self) end
+
 function GameScene:each(groupName)
-    if groupName then return self:group(groupName):each()
-    else return each(self) end
+    local group = self:group(groupName)
+    if group then return group:each()
+    else return pairs{} end
 end
 
 return GameScene

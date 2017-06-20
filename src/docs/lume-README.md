@@ -64,6 +64,10 @@ Returns the distance between the two points. If `squared` is true then the
 squared distance is returned -- this is faster to calculate and can still be
 used when comparing distances.
 
+#### lume.length(x, y [, squared])
+Returns the length of a vector of given coordinates. If `squared` is true then
+the squared length is returned.
+
 #### lume.angle(x1, y1, x2, y2)
 Returns the angle between the two points.
 

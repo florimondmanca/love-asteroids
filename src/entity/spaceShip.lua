@@ -60,6 +60,7 @@ function SpaceShip:init(t)
     self.maxOmega = t.maxOmega or 3
     self.torque = 0
     self.rthrust = t.rthrust or 30  -- angular acceleration
+    self.frictionOn = t.frictionOn or false
 end
 
 function SpaceShip:shoot()
@@ -112,13 +113,15 @@ function SpaceShip:update(dt)
     self.timer:update(dt)
     self:externalActions(dt)
     -- apply translation and rotation dampening
-    local a = self.thrust / self.maxSpeed
-    self:addForce(-a * self.vx, -a * self.vy)
-    local c = self.rthrust / self.maxOmega
-    self:addTorque(-c * self.omega)
+    if self.frictionOn then
+        local a = self.thrust / self.maxSpeed
+        self:addForce(-a * self.vx, -a * self.vy)
+        local c = self.rthrust / self.maxOmega
+        self:addTorque(-c * self.omega)
+    end
     -- integrate rotation
     self.omega = self.omega + self.torque * dt / self.inertia
-    self.angle = self.angle + self.omega * dt
+    self.angle = (self.angle + self.omega * dt) % (2*math.pi)
     self.cos = math.cos(self.angle)
     self.sin = math.sin(self.angle)
     self.torque = 0

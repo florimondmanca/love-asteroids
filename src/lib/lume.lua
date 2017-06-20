@@ -129,6 +129,12 @@ function lume.distance(x1, y1, x2, y2, squared)
 end
 
 
+function lume.length(x, y, squared)
+    local s = x^2 + y^2
+    return squared and s or math_sqrt(s)
+end
+
+
 function lume.angle(x1, y1, x2, y2)
   return math_atan2(y2 - y1, x2 - x1)
 end

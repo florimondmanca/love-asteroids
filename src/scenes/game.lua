@@ -25,29 +25,13 @@ S:addProperty('score', {
         Signal.emit('changed_score', self, value) end,
 })
 
-S:addGroup('shots')
-S:addGroup('asteroids', {init=function(group)
-    for _ = 1, 30 do group:add(Asteroid.newRandomAtBorders()) end
-end})
-S:addGroup('particleSystems')
-S:addGroup('pickups', {z=-1})
-S:addGroup('widgets', {
-    objects = {
-        scoreLabel = {
-            script = 'entity.widgets.Label',
-            arguments = {x=50, y=50, text='0', prefix='Score\n'}
-        },
-        timeCounter = {
-            script = 'entity.widgets.TimeCounter',
-            arguments = {x = w-100, y = 50}
-        }
-    }
-})
+-----------------
+-- Basics/Misc --
+-----------------
 
-S:addObjectAs('spaceShip', {
-    script = 'entity.PlayerSpaceShip',
-    arguments = {x = w/2, y = h/2, scene = S.scene, health = 5}
-})
+S:addGroup('shots')
+S:addGroup('particleSystems')
+
 S:addObject{
     script = 'core.KeyTrigger',
     arguments = {key = 'space', action = function()
@@ -55,10 +39,31 @@ S:addObject{
     end}
 }
 
-S:addSignalListener('fire_laser', function(scene)
-    love.audio.play('assets/audio/shot' .. lume.randomchoice{1, 2, 3} .. '.wav', 'static', false, .5)
-    scene.objects.spaceShip:shoot()
+
+-------------
+-- Pickups --
+-------------
+
+S:addGroup('pickups', {z=-1})
+
+S:addUpdateAction(function(self)
+    -- check collisions between player and pickups
+    for _, pickup in self:each('pickups') do
+        if collisions.circleToCircle(pickup, self.objects.player) then
+            pickup:onCollected(self.objects.player)
+            self:group('pickups'):remove(pickup)
+        end
+    end
 end)
+
+
+---------------
+-- Asteroids --
+---------------
+
+S:addGroup('asteroids', {init=function(group)
+    -- for _ = 1, 30 do group:add(Asteroid.newRandomAtBorders()) end
+end})
 
 S:addSignalListener('collision_asteroid_shot', function(scene, asteroid, shot)
     splitAsteroid(scene, asteroid, shot)
@@ -70,7 +75,7 @@ S:addSignalListener('collision_asteroid_shot', function(scene, asteroid, shot)
     if love.math.random() < .1 then
         local p = Pickup{x=asteroid.x, y=asteroid.y}
         p.action = function(spaceShip)
-            scene.objects.spaceShip.timer:during(5, function()
+            spaceShip.timer:during(5, function()
                 spaceShip.shooter = 'triple'
             end, function() spaceShip.shooter = 'simple' end)
         end
@@ -95,10 +100,6 @@ S:addSignalListener('collision_asteroid_player', function(scene, asteroid, playe
     end
 end)
 
-S:addSignalListener('changed_score', function(scene, score)
-    scene:group('widgets').objects.scoreLabel:setText(tostring(score))
-end)
-
 S:addUpdateAction(function(self)
     -- check collisions between shots and asteroids
     for _, asteroid in self:each('asteroids') do
@@ -113,21 +114,75 @@ end)
 S:addUpdateAction(function(self)
     -- check collisions between asteroids and the player
     for _, asteroid in self:each('asteroids') do
-        if collisions.circleToCircle(asteroid, self.objects.spaceShip) then
-            Signal.emit('collision_asteroid_player', self, asteroid, self.objects.spaceShip)
+        if collisions.circleToCircle(asteroid, self.objects.player) then
+            Signal.emit('collision_asteroid_player', self, asteroid, self.objects.player)
         end
     end
 end)
 
-S:addUpdateAction(function(self)
-    -- check collisions between player and pickups
-    for _, pickup in self:each('pickups') do
-        if collisions.circleToCircle(pickup, self.objects.spaceShip) then
-            pickup:onCollected(self.objects.spaceShip)
-            self:group('pickups'):remove(pickup)
-        end
-    end
+
+-------------
+-- Widgets --
+-------------
+
+S:addGroup('widgets', {
+    objects = {
+        scoreLabel = {
+            script = 'entity.widgets.Label',
+            arguments = {x=50, y=50, text='0', prefix='Score\n'}
+        },
+        timeCounter = {
+            script = 'entity.widgets.TimeCounter',
+            arguments = {x = w-100, y = 50}
+        }
+    }
+})
+
+S:addSignalListener('changed_score', function(scene, score)
+    scene:group('widgets').objects.scoreLabel:setText(tostring(score))
 end)
+
+
+-------------
+-- Enemies --
+-------------
+
+S:addGroup('enemies', {
+    objects = {
+        drifting1 = {
+            script = 'entity.DriftingSpaceShip',
+            arguments = {
+                x=0, y=0, scene=S.scene,
+                driftAngle=lume.random(2*math.pi), driftSpeed=100,
+                omega = 2
+            }
+        }
+    }
+})
+
+
+------------------------
+-- Player's spaceship --
+------------------------
+
+S:addObjectAs('player', {
+    script = 'entity.PlayerSpaceShip',
+    arguments = {x = w/2, y = h/2, scene = S.scene, health = 5}
+})
+
+S:addUpdateAction(function(self)
+    self:group('enemies').objects.drifting1:aimAt(self.objects.player)
+end)
+
+S:addSignalListener('fire_laser', function(scene)
+    love.audio.play('assets/audio/shot' .. lume.randomchoice{1, 2, 3} .. '.wav', 'static', false, .5)
+    scene.objects.player:shoot()
+end)
+
+
+----------------
+-- Scene-wise --
+----------------
 
 S:addEffect(
     shine.glowsimple()

@@ -9,15 +9,12 @@ local function map(container, func)
     return result
 end
 
-local function addShotToScene(shot, scene)
-    scene:group('shots'):add(shot)
-    lume.push(shot.groups, scene:group('shots'))
+local function addShotsToScene(shots, scene)
+    for _, shot in ipairs(shots) do
+        scene:group('shots'):add(shot)
+        lume.push(shot.groups, scene:group('shots'))
+    end
 end
-
-local function addMultipleShotsToScene(shots, scene)
-    for _, shot in ipairs(shots) do addShotToScene(shot, scene) end
-end
-
 
 local function spread(angle, width, number)
     local angles = {}
@@ -28,16 +25,16 @@ local function spread(angle, width, number)
 end
 
 function shooters.simple(x, y, angle, z)
-    local shot = Shot{x=x, y=y, angle=angle, z=z}
-    shot.add = lume.fn(addShotToScene, shot)
-    return shot
+    local shots = {Shot{x=x, y=y, angle=angle, z=z}}
+    shots.add = lume.fn(addShotsToScene, shots)
+    return shots
 end
 
 local function multipleShoots(n)
     return function(x, y, angle, z)
         local shots = map(spread(angle, math.sqrt(n)*math.pi/10, n),
         function(a) return Shot{x=x, y=y, angle=a, z=z} end)
-        shots.add = lume.fn(addMultipleShotsToScene, shots)
+        shots.add = lume.fn(addShotsToScene, shots)
         return shots
     end
 end
