@@ -22,6 +22,7 @@ function Shot:init(t)
     self.y = t.y
     self.vx = self.speed * math.cos(t.angle)
     self.vy = self.speed * math.sin(t.angle)
+    self.color = t.color or self.color
     self.time = 0
     self.opacity = 255
     timer:after(.7*self.lifetime, function()

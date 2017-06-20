@@ -47,7 +47,7 @@ S:addGroup('widgets', {
 })
 
 S:addObjectAs('spaceShip', {
-    script = 'entity.SpaceShip',
+    script = 'entity.PlayerSpaceShip',
     arguments = function(self) return {scene = self, health = 5} end
 })
 S:addObject{
@@ -133,8 +133,8 @@ end)
 
 S:addEffect(
     shine.glowsimple()
-    :chain(shine.pixelate{pixel_size=2, samples=1, add_original=true})
-    :chain(shine.vignette{radius=1, opacity=.5})
+    -- :chain(shine.pixelate{pixel_size=2, samples=1, add_original=true})
+    :chain(shine.vignette{radius=.9, opacity=.5})
 )
 
 S:addCallback('enter', function(self)

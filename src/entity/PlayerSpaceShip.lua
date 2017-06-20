@@ -10,7 +10,7 @@ local w, h = love.graphics.getDimensions()
 local SpaceShip = Entity:extend()
 
 SpaceShip:set{
-    image = nil, -- argument
+    image = love.graphics.newImage('assets/img/player.png'), -- argument
     -- body properties
     mass = 1, -- argument
     radius = {
@@ -50,15 +50,16 @@ SpaceShip:set{
 
 function SpaceShip:init(t)
     Entity.init(self, t)
-    assert(t.image, 'image required')
     assert(t.scene, 'scene required')
-    self.image = t.image
     self.scene = t.scene
-    t.health = t.health or {max = 10}
-    if type(t.health) == 'number' then t.health = {max = t.health} end
-    self.healthBar = QuantityBar(t.health)
+    t.scene = nil
+    if t.health then
+        if type(t.health) == 'number' then t.health = {max = t.health} end
+    end
+    self.healthBar = QuantityBar(t.health or {max = 10})
+    t.health = nil
     -- update attributes from t
-    for k, v in pairs(t.physics or {}) do
+    for k, v in pairs(t) do
         if SpaceShip[k] then self[k] = v
         else print('warning: unknown property ' .. k .. ' for SpaceShip') end
     end
