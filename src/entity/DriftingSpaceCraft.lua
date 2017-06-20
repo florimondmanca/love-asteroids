@@ -5,23 +5,16 @@ An enemy drifting in space (constant linear and angular velocity), shots at the 
 
 ]]--
 
-local Entity = require 'core.Entity'
+local SpaceShip = require 'entity.SpaceShip'
 
-local DriftingSpaceCraft = Entity:extend()
-DriftingSpaceCraft:set{
-    image = love.graphics.newImage('assets/img/drifting_space_craft.png')
-}
+local DriftingSpaceCraft = SpaceShip:extend()
 
 function DriftingSpaceCraft:init(t)
-    Entity.init(self, t)
-    assert(t.x, 'x required')
-    assert(t.y, 'y required')
-    self.x = t.x
-    self.y = t.y
-    self.image = love.graphics.newImage
-end
-
-function DriftingSpaceCraft:render()
+    t.image = love.graphics.newImage('assets/img/enemy_drifting.png')
+    assert(t.driftAngle and t.driftSpeed, 'driftAngle, driftSpeed required')
+    t.vx = t.driftSpeed * math.cos(t.driftAngle)
+    t.vy = t.driftSpeed * math.sin(t.driftAngle)
+    SpaceShip.init(self, t)
 end
 
 return DriftingSpaceCraft

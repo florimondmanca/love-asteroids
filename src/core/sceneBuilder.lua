@@ -33,6 +33,7 @@ local Builder = class()
 
 function Builder:init()
     self.funcs = {}  -- list of initializing functions <func(scene)>
+    self.scene = GameScene:extend()
 end
 
 function Builder:addProperty(name, pTable)
@@ -91,12 +92,11 @@ end
 
 function Builder:build()
     -- create a new scene subclass
-    local scene = GameScene:extend()
     local funcs = self.funcs
-    function scene:setup()
+    function self.scene:setup()
         for _, func in ipairs(funcs) do func(self) end
     end
-    return scene
+    return self.scene
 end
 
 return Builder

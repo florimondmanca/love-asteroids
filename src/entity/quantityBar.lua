@@ -5,6 +5,8 @@ local QuantityBar = class()
 QuantityBar:set{w = 50}
 
 function QuantityBar:init(t)
+    assert(t, 'requires max quantity (number) or a table {min=, max=, initial=}')
+    if type(t) == 'number' then t = {max = t} end
     assert(t.max, 'max required')
     if not t.min then t.min = 0 end
     self.quantity = lume.clamp(t.initial or t.max, t.min, t.max)

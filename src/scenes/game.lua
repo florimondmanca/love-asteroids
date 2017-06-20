@@ -6,7 +6,7 @@ local collisions = require 'core.collisions'
 local SceneBuilder = require 'core.SceneBuilder'
 local shine = require 'lib.shine'
 
-local w, _ = love.graphics.getDimensions()
+local w, h = love.graphics.getDimensions()
 
 local function splitAsteroid(self, asteroid, damager)
     local left, right, ps = asteroid:split(damager)
@@ -27,9 +27,7 @@ S:addProperty('score', {
 
 S:addGroup('shots')
 S:addGroup('asteroids', {init=function(group)
-    for _ = 1, 30 do
-        group:add(Asteroid.newRandomAtBorders())
-    end
+    for _ = 1, 30 do group:add(Asteroid.newRandomAtBorders()) end
 end})
 S:addGroup('particleSystems')
 S:addGroup('pickups', {z=-1})
@@ -48,13 +46,13 @@ S:addGroup('widgets', {
 
 S:addObjectAs('spaceShip', {
     script = 'entity.PlayerSpaceShip',
-    arguments = function(self) return {scene = self, health = 5} end
+    arguments = {x = w/2, y = h/2, scene = S.scene, health = 5}
 })
 S:addObject{
     script = 'core.KeyTrigger',
-    arguments = function(self) return {key = 'space', action = function()
-        Signal.emit('fire_laser', self)
-    end} end
+    arguments = {key = 'space', action = function()
+        Signal.emit('fire_laser', S.scene)
+    end}
 }
 
 S:addSignalListener('fire_laser', function(scene)

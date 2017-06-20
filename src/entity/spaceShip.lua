@@ -3,16 +3,12 @@ local Entity = require 'core.Entity'
 local Timer = require 'core.Timer'
 
 local shooters = require 'entity.shooters'
-local QuantityBar = require 'entity.QuantityBar'
 
 local w, h = love.graphics.getDimensions()
 
 local SpaceShip = Entity:extend()
 
 SpaceShip:set{
-    image = nil, -- argument
-    -- body properties
-    mass = 1, -- argument
     radius = {
         get = function(self) return self.image:getWidth()/2 end,
         set = function(self, new) return new end,
@@ -22,70 +18,68 @@ SpaceShip:set{
         get = function(self, value) return value end,
         set = function(self, shooter)
             if type(shooter) == 'string' then
-                return shooters[shooter] or error('No shooter named ' .. tostring(shooter), 3)
+                return shooters[shooter] or error('No shooter named ' .. tostring(shooter))
             else
+                assert(lume.find(shooters, shooter), 'Illegal shooter: ' .. tostring(shooter))
                 return shooter
             end
         end
     },
-    -- translation physics
-    x = w/2,
-    y = h/2,
-    vx = 0,
-    vy = 0,
-    maxSpeed = 200, -- argument
-    fx = 0,
-    fy = 0,
-    accForce = 500,
-    -- rotation physics
-    inertia = 1, -- argument
-    angle = -math.pi/2, -- argument
-    cos = 1,
-    sin = 0,
-    omega = 0,
-    maxOmega = 3,
-    torque = 0,
-    accTorque = 30,
 }
 
 function SpaceShip:init(t)
     Entity.init(self, t)
     assert(t.image, 'image required')
     assert(t.scene, 'scene required')
+    assert(t.x, 'x required')
+    assert(t.y, 'y required')
     self.image = t.image
     self.scene = t.scene
-    t.health = t.health or {max = 10}
-    if type(t.health) == 'number' then t.health = {max = t.health} end
-    self.healthBar = QuantityBar(t.health)
-    -- update attributes from t
-    for k, v in pairs(t.physics or {}) do
-        if SpaceShip[k] then self[k] = v
-        else print('warning: unknown property ' .. k .. ' for SpaceShip') end
-    end
     self.timer = Timer()
     self.shooter = 'simple'
+    -- position
+    self.x = t.x
+    self.x0 = t.x0 or self.x
+    self.y = t.y
+    self.y0 = t.y0 or self.y
+    -- inertia properties
+    self.mass = t.mass or 1
+    self.inertia = t.inertia or 1
+    -- translation physics
+    self.vx = t.vx or 0
+    self.vy = t.vy or 0
+    self.maxSpeed = t.maxSpeed or 200
+    self.fx = 0
+    self.fy = 0
+    self.thrust = t.thrust or 500  -- linear acceleration
+    -- rotation physics
+    self.angle = t.angle or -math.pi/2
+    self.cos = math.cos(self.angle)
+    self.sin = math.sin(self.angle)
+    self.omega = t.omega or 0
+    self.maxOmega = t.maxOmega or 3
+    self.torque = 0
+    self.rthrust = t.rthrust or 30  -- angular acceleration
 end
 
 function SpaceShip:shoot()
-    self.shooter(self.scene, self, self.z)
+    self.shooter(self.x, self.y, self.angle, self.z).add(self.scene)
 end
 
 function SpaceShip:resetPos()
-    self.x = w/2
-    self.y = h/2
+    self.x = self.x0
+    self.y = self.y0
     self.vx = 0
     self.vy = 0
 end
 
---- adds a force in the cartesian frame of reference
+--- adds a force in the screen frame of reference
 function SpaceShip:addForce(fx, fy)
     self.fx = self.fx + (fx or 0)
     self.fy = self.fy + (fy or 0)
 end
 
 --- adds a force in the spaceship's frame of reference
--- fPar : force in the direction of movement
--- fOrth : force perpendicular to the direction of movement
 function SpaceShip:addForceV(fPar, fOrth)
     fPar = fPar or 0
     fOrth = fOrth or 0
@@ -93,21 +87,34 @@ function SpaceShip:addForceV(fPar, fOrth)
     self.fy = self.fy + (fPar * self.sin + fOrth * self.cos)
 end
 
+function SpaceShip:forward(strength)
+    self:addForceV(self.thrust * (strength or 1))
+end
+function SpaceShip:backward(strength)
+    self:addForceV(-self.thrust * (strength or 1))
+end
+function SpaceShip:rotateRight(strength)
+    self:addTorque(self.rthrust * (strength or 1))
+end
+function SpaceShip:rotateLeft(strength)
+    self:addTorque(-self.rthrust * (strength or 1))
+end
+
 function SpaceShip:addTorque(t)
     self.torque = self.torque + t
 end
 
+--- SpaceShip:externalActions(dt): callback, called during update(dt)
+-- define here external actions that alter the spaceship's dynamical state
+function SpaceShip:externalActions() end
+
 function SpaceShip:update(dt)
     self.timer:update(dt)
-    -- apply forces/torque based on input
-    if love.keyboard.isDown('up') then self:addForceV(self.accForce) end
-    if love.keyboard.isDown('down') then self:addForceV(-self.accForce) end
-    if love.keyboard.isDown('right') then self:addTorque(self.accTorque) end
-    if love.keyboard.isDown('left') then self:addTorque(-self.accTorque) end
+    self:externalActions(dt)
     -- apply translation and rotation dampening
-    local a = self.accForce / self.maxSpeed
+    local a = self.thrust / self.maxSpeed
     self:addForce(-a * self.vx, -a * self.vy)
-    local c = self.accTorque / self.maxOmega
+    local c = self.rthrust / self.maxOmega
     self:addTorque(-c * self.omega)
     -- integrate rotation
     self.omega = self.omega + self.torque * dt / self.inertia
@@ -135,20 +142,10 @@ function SpaceShip:render()
             love.graphics.rotate(self.angle)
             love.graphics.draw(self.image, -self.image:getWidth()/2, -self.image:getHeight()/2)
         love.graphics.pop()
-        self.healthBar:draw(0, 10 + self.image:getHeight()/2)
     love.graphics.pop()
 end
 
-function SpaceShip:damage(value)
-    self.healthBar:addQuantity(value)
-    if self.healthBar.quantity <= 0 then
-        self:resetPos()
-        self.healthBar.quantity = self.healthBar.max
-        self.shooter = 'simple'
-        self.timer:clear()
-        return true
-    end
-end
-
+--- SpaceShip:damage(amount) : callback, defines what happens when spaceship gets hurt
+function SpaceShip:damage() end
 
 return SpaceShip
