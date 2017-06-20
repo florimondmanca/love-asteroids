@@ -157,6 +157,7 @@ S:addGroup('enemies', {
                 driftAngle=lume.random(2*math.pi), driftSpeed=100,
                 omega = 2,
                 shotColor = {255, 200, 120},
+                getAim = function() return S.scene.objects.player.x, S.scene.objects.player.y end
             }
         }
     }
@@ -166,18 +167,34 @@ S:addUpdateAction(function(self)
     -- check collisions between enemies' shots and the player
     for _, shot in self:each('shots_enemies') do
         if collisions.circleToCircle(shot, self.objects.player) then
-            Signal.emit('collision_enemy_shot_player', self, shot, self.objects.player)
+            Signal.emit('collision_enemyshot_player', self, shot, self.objects.player)
         end
     end
 end)
 
-S:addSignalListener('collision_enemy_shot_player', function(self, shot, player)
+S:addSignalListener('collision_enemyshot_player', function(self, shot, player)
     shot:kill()
     if player:damage(-1) then
         love.audio.play('assets/audio/player_dead.wav', 'static', false, .7)
     else
         love.audio.play('assets/audio/collision.wav', 'static', false, .4)
     end
+end)
+
+S:addUpdateAction(function(self)
+    -- check collision between player's shots and enemies
+    for _, shot in self:each('shots_player') do
+        for _, enemy in self:each('enemies') do
+            if collisions.circleToCircle(shot, enemy) then
+                Signal.emit('collision_playershot_enemy', self, shot, enemy)
+            end
+        end
+    end
+end)
+
+S:addSignalListener('collision_playershot_enemy', function(self, shot, enemy)
+    shot:kill()
+    self:group('enemies'):remove(enemy)
 end)
 
 
@@ -194,10 +211,6 @@ S:addObjectAs('player', {
         shotColor = {200, 255, 120},
     }
 })
-
-S:addUpdateAction(function(self)
-    self:group('enemies').objects.drifting1:aimAt(self.objects.player)
-end)
 
 S:addSignalListener('fire_laser', function(scene)
     love.audio.play('assets/audio/shot' .. lume.randomchoice{1, 2, 3} .. '.wav', 'static', false, .5)
