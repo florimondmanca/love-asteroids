@@ -3,11 +3,10 @@ local lume = require 'lib.lume'
 local Signal = require 'lib.signal'
 local GameScene = require 'core.GameScene'
 
-local function buildObject(scene, container, key, objectTable)
+local function buildObject(container, key, objectTable)
     local object
     if objectTable.arguments and objectTable.script then
         local args = objectTable.arguments
-        if type(args) == 'function' then args = args(scene) end
         object = require(objectTable.script)(args)
         for name, fx in pairs(objectTable.effects or {}) do
             object:addEffect(fx, type(name) == 'string' and name or nil)
@@ -22,10 +21,10 @@ local function buildObject(scene, container, key, objectTable)
     end
 end
 
-local function buildGroup(scene, group, groupTable)
+local function buildGroup(group, groupTable)
     for key, objectTable in pairs(groupTable.objects or {}) do
         objectTable.z = (objectTable.z or 0) + (groupTable.z or 0)
-        buildObject(scene, group, key, objectTable)
+        buildObject(group, key, objectTable)
     end
 end
 
@@ -49,20 +48,20 @@ function Builder:addGroup(name, groupTable)
         initGroup = groupTable.init
     end
     lume.push(self.funcs, function(scene)
-        buildGroup(scene, scene:createGroup(name, {z=groupTable.z}), groupTable)
+        buildGroup(scene:createGroup(name, {z=groupTable.z}), groupTable)
         initGroup(scene:group(name))
     end)
 end
 
 function Builder:addObject(objectTable)
     lume.push(self.funcs, function(scene)
-        buildObject(scene, scene, nil, objectTable)
+        buildObject(scene, nil, objectTable)
     end)
 end
 
 function Builder:addObjectAs(name, objectTable)
     lume.push(self.funcs, function(scene)
-        buildObject(scene, scene, name, objectTable)
+        buildObject(scene, name, objectTable)
     end)
 end
 
