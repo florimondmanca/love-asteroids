@@ -8,10 +8,11 @@ local Player = SpaceShip:extend()
 function Player:init(t)
     t = lume.merge(t or {}, {
         image = love.graphics.newImage('assets/img/player.png'),
-        frictionOn = true
+        frictionOn = true,
+        shotGroup = 'shots_player'
     })
     SpaceShip.init(self, t)
-    self.healthBar = QuantityBar(10)
+    self.healthBar = QuantityBar(t.health)
 end
 
 function Player:externalActions()
@@ -24,7 +25,10 @@ end
 local render = Player.render
 function Player:render()
     render(self)
-    self.healthBar:draw(self.x, self.y + self.radius + 10)
+    love.graphics.push()
+    love.graphics.translate(self.x, self.y - (self.radius + 10))
+    self.healthBar:draw()
+    love.graphics.pop()
 end
 
 function Player:damage(amount)

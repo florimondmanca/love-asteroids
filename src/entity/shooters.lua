@@ -3,16 +3,10 @@ local Shot = require 'entity.Shot'
 
 local shooters = {}
 
-local function map(container, func)
-    local result = {}
-    for _, object in ipairs(container) do table.insert(result, func(object)) end
-    return result
-end
-
-local function addShotsToScene(shots, scene)
+local function addTo(container, shots)
     for _, shot in ipairs(shots) do
-        scene:group('shots'):add(shot)
-        lume.push(shot.groups, scene:group('shots'))
+        container:add(shot)
+        lume.push(shot.groups, container)
     end
 end
 
@@ -24,22 +18,32 @@ local function spread(angle, width, number)
     return angles
 end
 
-function shooters.simple(x, y, angle, z)
-    local shots = {Shot{x=x, y=y, angle=angle, z=z}}
-    shots.add = lume.fn(addShotsToScene, shots)
-    return shots
+local function bundle(shots)
+    local b = {}
+    function b.add(container) addTo(container, shots) end
+    function b.setColor(color)
+        if color then
+            for _, shot in ipairs(shots) do shot.color = color end
+        end
+        return b
+    end
+    return b
 end
 
-local function multipleShoots(n)
+local function multipleShooter(n)
     return function(x, y, angle, z)
-        local shots = map(spread(angle, math.sqrt(n)*math.pi/10, n),
-        function(a) return Shot{x=x, y=y, angle=a, z=z} end)
-        shots.add = lume.fn(addShotsToScene, shots)
-        return shots
+        return bundle(lume.map(
+            spread(angle, math.sqrt(n)*math.pi/10, n),
+            function(a) return Shot{x=x, y=y, angle=a, z=z} end
+        ))
     end
 end
 
-shooters.triple = multipleShoots(3)
-shooters.quint = multipleShoots(5)
+function shooters.simple(x, y, angle, z)
+    return bundle{Shot{x=x, y=y, angle=angle, z=z}}
+end
+
+shooters.triple = multipleShooter(3)
+shooters.quint = multipleShooter(5)
 
 return shooters

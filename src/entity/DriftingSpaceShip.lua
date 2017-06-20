@@ -15,6 +15,7 @@ function DriftingSpaceShip:init(t)
     assert(t.driftAngle and t.driftSpeed, 'driftAngle, driftSpeed required')
     t.vx = t.driftSpeed * math.cos(t.driftAngle)
     t.vy = t.driftSpeed * math.sin(t.driftAngle)
+    t.shotGroup = 'shots_enemies'
     SpaceShip.init(self, t)
     self.sight = t.sight or math.pi/20
     self.minShotInterval = t.minShotInterval or 1  -- seconds

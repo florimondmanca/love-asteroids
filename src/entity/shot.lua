@@ -34,14 +34,13 @@ function Shot:update(dt)
     self.x = lume.loop(self.x + self.vx * dt, 0, w, self.radius)
     self.y = lume.loop(self.y + self.vy * dt, 0, h, self.radius)
     self.time = self.time + dt
-    self.color = {100, 255, 200, self.opacity}
     if self.time > self.lifetime then
         self:kill()
     end
 end
 
 function Shot:render()
-    love.graphics.setColor(self.color)
+    love.graphics.setColor(lume.concat(self.color, {self.opacity}))
     love.graphics.circle('fill', self.x, self.y, self.radius, 20)
 end
 

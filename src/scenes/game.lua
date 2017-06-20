@@ -29,7 +29,8 @@ S:addProperty('score', {
 -- Basics/Misc --
 -----------------
 
-S:addGroup('shots')
+S:addGroup('shots_enemies')
+S:addGroup('shots_player')
 S:addGroup('particleSystems')
 
 S:addObject{
@@ -65,7 +66,7 @@ S:addGroup('asteroids', {init=function(group)
     -- for _ = 1, 30 do group:add(Asteroid.newRandomAtBorders()) end
 end})
 
-S:addSignalListener('collision_asteroid_shot', function(scene, asteroid, shot)
+S:addSignalListener('collision_asteroid_player_shot', function(scene, asteroid, shot)
     splitAsteroid(scene, asteroid, shot)
     shot:kill()
     asteroid:kill()
@@ -101,11 +102,11 @@ S:addSignalListener('collision_asteroid_player', function(scene, asteroid, playe
 end)
 
 S:addUpdateAction(function(self)
-    -- check collisions between shots and asteroids
+    -- check collisions between player's shots and asteroids
     for _, asteroid in self:each('asteroids') do
-        for _, shot in self:each('shots') do
+        for _, shot in self:each('shots_player') do
             if collisions.circleToCircle(shot, asteroid) then
-                Signal.emit('collision_asteroid_shot', self, asteroid, shot)
+                Signal.emit('collision_asteroid_player_shot', self, asteroid, shot)
             end
         end
     end
@@ -152,13 +153,32 @@ S:addGroup('enemies', {
         drifting1 = {
             script = 'entity.DriftingSpaceShip',
             arguments = {
-                x=0, y=0, scene=S.scene,
+                x=lume.random(w), y=lume.random(h), scene=S.scene,
                 driftAngle=lume.random(2*math.pi), driftSpeed=100,
-                omega = 2
+                omega = 2,
+                shotColor = {255, 200, 120},
             }
         }
     }
 })
+
+S:addUpdateAction(function(self)
+    -- check collisions between enemies' shots and the player
+    for _, shot in self:each('shots_enemies') do
+        if collisions.circleToCircle(shot, self.objects.player) then
+            Signal.emit('collision_enemy_shot_player', self, shot, self.objects.player)
+        end
+    end
+end)
+
+S:addSignalListener('collision_enemy_shot_player', function(self, shot, player)
+    shot:kill()
+    if player:damage(-1) then
+        love.audio.play('assets/audio/player_dead.wav', 'static', false, .7)
+    else
+        love.audio.play('assets/audio/collision.wav', 'static', false, .4)
+    end
+end)
 
 
 ------------------------
@@ -167,7 +187,12 @@ S:addGroup('enemies', {
 
 S:addObjectAs('player', {
     script = 'entity.PlayerSpaceShip',
-    arguments = {x = w/2, y = h/2, scene = S.scene, health = 5}
+    arguments = {
+        x = w/2, y = h/2,
+        scene = S.scene,
+        health = 5,
+        shotColor = {200, 255, 120},
+    }
 })
 
 S:addUpdateAction(function(self)

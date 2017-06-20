@@ -33,10 +33,13 @@ function SpaceShip:init(t)
     assert(t.scene, 'scene required')
     assert(t.x, 'x required')
     assert(t.y, 'y required')
+    assert(t.shotGroup, 'shotGroup required')
     self.image = t.image
     self.scene = t.scene
     self.timer = Timer()
     self.shooter = 'simple'
+    self.shotColor = t.shotColor
+    self.shotGroup = t.shotGroup
     -- position
     self.x = t.x
     self.x0 = t.x0 or self.x
@@ -64,7 +67,9 @@ function SpaceShip:init(t)
 end
 
 function SpaceShip:shoot()
-    self.shooter(self.x, self.y, self.angle, self.z).add(self.scene)
+    self.shooter(self.x, self.y, self.angle, self.z)
+        .setColor(self.shotColor)
+        .add(self.scene:group(self.shotGroup))
 end
 
 function SpaceShip:resetPos()
