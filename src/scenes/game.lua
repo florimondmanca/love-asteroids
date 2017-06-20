@@ -131,8 +131,11 @@ S:addUpdateAction(function(self)
     end
 end)
 
-S:addEffect(shine.colorgradesimple{grade={1, .95, 1.05}})
-S:addEffect(shine.vignette{radius=1, opacity=.5})
+S:addEffect(
+    shine.glowsimple()
+    :chain(shine.pixelate{pixel_size=2, samples=1, add_original=true})
+    :chain(shine.vignette{radius=1, opacity=.5})
+)
 
 S:addCallback('enter', function(self)
     love.graphics.setBackgroundColor(20, 25, 35)

@@ -77,7 +77,7 @@ local function build_shader(add_original, samples)
 		return color / float(%d);
 	}]]):format(math.max(1, math.min(9, samples)) + (add_original and 1 or 0))
 
-	print(table.concat(code,"\n"))
+	-- print(table.concat(code,"\n"))
 	return love.graphics.newShader(table.concat(code))
 end
 
