@@ -39,12 +39,13 @@ S:addObjectAs('player', {
         shotColor = {200, 255, 120, 255},
     }
 })
-S:addObject{
-    script = 'core.KeyTrigger',
-    arguments = {
-        key='k', action=function() S.scene.objects.player:damage(-1) end
-    }
-}
+-- -- for testing
+-- S:addObject{
+--     script = 'core.KeyTrigger',
+--     arguments = {
+--         key='k', action=function() S.scene.objects.player:damage(-1) end
+--     }
+-- }
 
 S:addGroup('particleSystems')
 
