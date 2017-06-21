@@ -1,5 +1,6 @@
 local lume = require 'lib.lume'
 local Shot = require 'entity.Shot'
+local Mine = require 'entity.Mine'
 
 local shooters = {}
 
@@ -31,19 +32,23 @@ local function bundle(shots)
 end
 
 local function multipleShooter(n)
-    return function(x, y, angle, z)
+    return function(sc)
         return bundle(lume.map(
-            spread(angle, math.sqrt(n)*math.pi/10, n),
-            function(a) return Shot{x=x, y=y, angle=a, z=z} end
+            spread(sc.angle, math.sqrt(n)*math.pi/10, n),
+            function(a) return Shot{x=sc.x, y=sc.y, angle=a, z=sc.z} end
         ))
     end
 end
 
-function shooters.simple(x, y, angle, z)
-    return bundle{Shot{x=x, y=y, angle=angle, z=z}}
+function shooters.laser_simple(sc)
+    return bundle{Shot{x=sc.x, y=sc.y, angle=sc.angle, z=sc.z}}
 end
 
-shooters.triple = multipleShooter(3)
-shooters.quint = multipleShooter(5)
+function shooters.mine_simple(sc)
+    return bundle{Mine{x=sc.x, y=sc.y, speed=20, angle=sc.angle + math.pi, z=sc.z}}
+end
+
+shooters.laser_triple = multipleShooter(3)
+shooters.laser_quint = multipleShooter(5)
 
 return shooters

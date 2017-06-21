@@ -36,7 +36,7 @@ function Player:damage(amount)
     if self.healthBar.quantity <= 0 then
         self:resetPos()
         self.healthBar.quantity = self.healthBar.max
-        self.shooter = 'simple'
+        self.shooter = 'laser_simple'
         self.timer:clear()
         return true
     end

@@ -14,7 +14,7 @@ SpaceShip:set{
         set = function(self, new) return new end,
     },
     shooter = {
-        value = shooters.simple,
+        value = shooters.laser_simple,
         get = function(self, value) return value end,
         set = function(self, shooter)
             if type(shooter) == 'string' then
@@ -37,7 +37,7 @@ function SpaceShip:init(t)
     self.image = t.image
     self.scene = t.scene
     self.timer = Timer()
-    self.shooter = 'simple'
+    self.shooter = 'laser_simple'
     self.shotColor = t.shotColor
     self.shotGroup = t.shotGroup
     -- position
@@ -67,8 +67,7 @@ function SpaceShip:init(t)
 end
 
 function SpaceShip:shoot()
-    self.shooter(self.x, self.y, self.angle, self.z)
-        .setColor(self.shotColor)
+    self.shooter(self).setColor(self.shotColor)
         .add(self.scene:group(self.shotGroup))
 end
 

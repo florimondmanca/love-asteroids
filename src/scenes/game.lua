@@ -52,14 +52,22 @@ end})
 S:addGroup('shots_enemies')
 S:addGroup('enemies', {
     objects = {
-        drifting1 = {
-            script = 'entity.DriftingSpaceShip',
+        -- drifting1 = {
+        --     script = 'entity.DriftingSpaceShip',
+        --     arguments = {
+        --         x=lume.random(w), y=lume.random(h), scene=S.scene,
+        --         driftAngle=lume.random(2*math.pi), driftSpeed=100,
+        --         omega = 2,
+        --         shotColor = {255, 200, 120},
+        --         getAim = function() return S.scene.objects.player.x, S.scene.objects.player.y end
+        --     }
+        -- },
+        miner1 = {
+            script = 'entity.MinerSpaceShip',
             arguments = {
                 x=lume.random(w), y=lume.random(h), scene=S.scene,
-                driftAngle=lume.random(2*math.pi), driftSpeed=100,
-                omega = 2,
-                shotColor = {255, 200, 120},
-                getAim = function() return S.scene.objects.player.x, S.scene.objects.player.y end
+                speed=50, angle=lume.random(2*math.pi),
+                omega = lume.random(-2, 2),
             }
         }
     }
@@ -124,8 +132,8 @@ S:addSignalListener('collision_asteroid_player_shot', function(scene, asteroid, 
         local p = Pickup{x=asteroid.x, y=asteroid.y}
         p.action = function(spaceShip)
             spaceShip.timer:during(5, function()
-                spaceShip.shooter = 'triple'
-            end, function() spaceShip.shooter = 'simple' end)
+                spaceShip.shooter = 'laser_triple'
+            end, function() spaceShip.shooter = 'laser_simple' end)
         end
         p.lifetime = 5
         scene:group('pickups'):add(p)
