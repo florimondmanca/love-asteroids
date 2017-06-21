@@ -1,6 +1,7 @@
 local lume = require 'lib.lume'
 local SpaceShip = require 'entity.SpaceShip'
 local QuantityBar = require 'entity.QuantityBar'
+local ParticleSystem = require 'entity.ParticleSystem'
 
 
 local Player = SpaceShip:extend()
@@ -34,6 +35,21 @@ end
 function Player:damage(amount)
     self.healthBar:addQuantity(amount)
     if self.healthBar.quantity <= 0 then
+        self.scene:group('particleSystems'):add(ParticleSystem.burst{
+            shape = 'triangle',
+            x = self.x,
+            y = self.y,
+            number = 16,
+            speed = {10, 200},
+            lifetime = {.05, .5},
+            spin = 4,
+            size = .5,
+            colors = {
+                200, 200, 200, 255,
+                200, 120, 100, 150,
+                160, 100, 80, 0
+            }
+        })
         self:resetPos()
         self.healthBar.quantity = self.healthBar.max
         self.shooter = 'laser_simple'

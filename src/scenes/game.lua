@@ -36,9 +36,15 @@ S:addObjectAs('player', {
         x = w/2, y = h/2,
         scene = S.scene,
         health = 5,
-        shotColor = {200, 255, 120},
+        shotColor = {200, 255, 120, 255},
     }
 })
+S:addObject{
+    script = 'core.KeyTrigger',
+    arguments = {
+        key='k', action=function() S.scene.objects.player:damage(-1) end
+    }
+}
 
 S:addGroup('particleSystems')
 
@@ -52,21 +58,21 @@ end})
 S:addGroup('shots_enemies')
 S:addGroup('enemies', {
     objects = {
-        -- drifting1 = {
-        --     script = 'entity.DriftingSpaceShip',
-        --     arguments = {
-        --         x=lume.random(w), y=lume.random(h), scene=S.scene,
-        --         driftAngle=lume.random(2*math.pi), driftSpeed=100,
-        --         omega = 2,
-        --         shotColor = {255, 200, 120},
-        --         getAim = function() return S.scene.objects.player.x, S.scene.objects.player.y end
-        --     }
-        -- },
+        drifting1 = {
+            script = 'entity.DriftingSpaceShip',
+            arguments = {
+                x = lume.random(w), y = lume.random(h), scene = S.scene,
+                driftAngle = lume.random(2*math.pi), driftSpeed = 100,
+                omega = 2,
+                shotColor = {255, 200, 120},
+                getAim = function() return S.scene.objects.player.x, S.scene.objects.player.y end
+            }
+        },
         miner1 = {
             script = 'entity.MinerSpaceShip',
             arguments = {
-                x=lume.random(w), y=lume.random(h), scene=S.scene,
-                speed=50, angle=lume.random(2*math.pi),
+                x = lume.random(w), y = lume.random(h), scene = S.scene,
+                speed = 50, angle = lume.random(2*math.pi),
                 omega = lume.random(-2, 2),
             }
         }

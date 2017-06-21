@@ -1,5 +1,6 @@
 local lume = require 'lib.lume'
 local Entity = require 'core.Entity'
+local ParticleSystem = require 'entity.ParticleSystem'
 
 local w, h = love.graphics.getDimensions()
 
@@ -10,31 +11,6 @@ local asteroidQuads = {
     love.graphics.newQuad(0, 128, 128, 128, asteroidSheet:getDimensions()),
     love.graphics.newQuad(128, 128, 128, 128, asteroidSheet:getDimensions()),
 }
-local particleImage = love.graphics.newImage('assets/img/particle_triangle.png')
-
--- generates new particles from an asteroid explosion
--- size : 0 (minimal size) - 1 (maximum size)
-local function newParticles(x, y, number, size, angle)
-    number = number or 16
-    return require('entity.ParticleSystem'):new(particleImage, number,
-    function() return x end, function() return y end,
-    function(ps)
-        ps:setParticleLifetime(.1, 1)
-        ps:setDirection(angle + math.pi)
-        ps:setSpread(math.pi/2)
-        ps:setSpeed(50, 300)
-        ps:setSpin(-5, 5)
-        ps:setSpinVariation(1)
-        ps:setSizes(.04 * size, .02 * size, .001 * size)
-        ps:setSizeVariation(1)
-        ps:setColors(
-            161, 160, 156, 255,
-            75, 86, 96, 0
-        )
-        ps:emit(number)
-    end)
-end
-
 
 local Asteroid = Entity:extend()
 Asteroid:set{
@@ -86,7 +62,6 @@ function Asteroid.newRandomAtBorders(t)
 end
 
 function Asteroid:split(damager)
-    -- if asteroid is big enough, break it into pieces
     local angle = lume.angle(self.x, self.y, damager.x, damager.y)
     local left = Asteroid.newRandom{
         x = self.x, y = self.y,
@@ -96,12 +71,24 @@ function Asteroid:split(damager)
         x = self.x, y = self.y,
         angle = angle - math.pi/2, radius = self.radius/2
     }
-    local ps = newParticles(self.x, self.y,
-        lume.lerp(1, 16, (self.radius/30)^2),
-        lume.lerp(.1, 1, self.radius/30), angle
-    )
-    local divides = self.radius/2 >= Asteroid.dieRadius
-    return divides and left or nil, divides and right or nil, ps
+    local ps = ParticleSystem.burst{
+        shape = 'triangle',
+        x = self.x, y = self.y,
+        number = lume.lerp(1, 16, (self.radius/30)^2),
+        size = lume.lerp(.1, 1, self.radius/30),
+        lifetime = {.1, 1},
+        direction = angle + math.pi,
+        spread = math.pi/2,
+        spin = 5,
+        speed = {50, 300},
+        colors = {
+            161, 160, 156, 255,
+            75, 86, 96, 0
+        },
+    }
+    -- is the asteroid big enough to split ?
+    if self.radius/2 >= Asteroid.dieRadius then return left, right, ps
+    else return nil, nil, ps end
 end
 
 function Asteroid:update(dt)
