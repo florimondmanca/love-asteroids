@@ -67,7 +67,8 @@ function SpaceShip:init(t)
 end
 
 function SpaceShip:shoot()
-    self.shooter(self).setColor(self.shotColor)
+    self.shooter(self)
+        .setColor(self.shotColor)
         .add(self.scene:group(self.shotGroup))
 end
 

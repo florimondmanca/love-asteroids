@@ -33,6 +33,11 @@ local Builder = class()
 function Builder:init()
     self.funcs = {}  -- list of initializing functions <func(scene)>
     self.scene = GameScene:extend()
+    self.defaultCollider = nil
+end
+
+function Builder:setDefaultCollider(collider)
+    self.defaultCollider = collider
 end
 
 function Builder:addProperty(name, pTable)
@@ -105,6 +110,7 @@ end
 
 
 function Builder:onCollisionBetween(t)
+    t.collider = t.collider or self.defaultCollider
     assert(type(t.resolve) == 'function', 'resolve must be a function')
     assert(type(t.collider) == 'function', 'collider must be a function')
     local action

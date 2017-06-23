@@ -1,4 +1,3 @@
-local Signal = require 'lib.signal'
 local lume = require 'lib.lume'
 local Asteroid = require 'entity.Asteroid'
 local Pickup = require 'entity.Pickup'
@@ -7,6 +6,10 @@ local SceneBuilder = require 'core.SceneBuilder'
 local shine = require 'lib.shine'
 
 local w, h = love.graphics.getDimensions()
+
+---------------
+-- Utilities --
+---------------
 
 local function splitAsteroid(self, asteroid, damager)
     local left, right, ps = asteroid:split(damager)
@@ -42,18 +45,14 @@ local function buildAsteroids(number, minSize, nSplits)
     return asteroids
 end
 
+
 local S = SceneBuilder()
 
-S:addProperty('score', {
-    value = 0,
-    get = function(self, value) return value end,
-    set = function(self, new) return new end,
-    afterSet = function(self, value)
-        Signal.emit('changed_score', self, value) end,
-})
-S:addSignalListener('changed_score', function(scene, score)
-    scene:group('widgets').objects.scoreLabel:setText(tostring(score))
-end)
+
+----------------------
+-- Objects & Groups --
+----------------------
+
 
 S:addGroup('asteroids', {init=function(group)
     for _, a in ipairs(buildAsteroids(30, 12, {
@@ -62,8 +61,6 @@ S:addGroup('asteroids', {init=function(group)
     })) do group:add(a) end
 end})
 
-
-S:addGroup('shots_player')
 S:addObjectAs('player', {
     script = 'entity.PlayerSpaceShip',
     arguments = {
@@ -73,12 +70,9 @@ S:addObjectAs('player', {
         shotColor = {200, 255, 120, 255},
     }
 })
-
+S:addGroup('shots_player')
 S:addGroup('particleSystems')
-
 S:addGroup('pickups', {z=-1})
-
-
 S:addGroup('shots_enemies', {z=-2})
 S:addGroup('mines_enemies', {z=-2})
 S:addGroup('enemies', {
@@ -90,7 +84,10 @@ S:addGroup('enemies', {
                 driftAngle = lume.random(2*math.pi), driftSpeed = 100,
                 omega = 2,
                 shotColor = {255, 200, 120},
-                getAim = function() return S.scene.objects.player.x, S.scene.objects.player.y end
+                getAim = function()
+                    return S.scene.objects.player.x,
+                    S.scene.objects.player.y
+                end
             }
         },
         miner1 = {
@@ -103,7 +100,6 @@ S:addGroup('enemies', {
         }
     }
 })
-
 
 S:addGroup('widgets', {
     objects = {
@@ -118,18 +114,22 @@ S:addGroup('widgets', {
     }
 })
 
+S:addProperty('score', {
+    value = 0,
+    get = function(self, value) return value end,
+    set = function(self, new) return new end,
+    afterSet = function(self, value)
+        self:group('widgets').objects.scoreLabel:setText(tostring(value))
+    end
+})
 
 S:addObject{
     script = 'core.KeyTrigger',
     arguments = {key = 'space', action = function()
-        Signal.emit('fire_laser', S.scene)
+        love.audio.play('assets/audio/shot' .. lume.randomchoice{1, 2, 3} .. '.wav', 'static', false, .5)
+        S.scene.objects.player:shoot()
     end}
 }
-S:addSignalListener('fire_laser', function(scene)
-    love.audio.play('assets/audio/shot' .. lume.randomchoice{1, 2, 3} .. '.wav', 'static', false, .5)
-    scene.objects.player:shoot()
-end)
-
 
 ----------------
 -- Collisions --
@@ -143,6 +143,7 @@ local function onPlayerHit(player)
     end
 end
 
+S:setDefaultCollider(collisions.circleToCircle)
 
 S:onCollisionBetween{
     groupA = 'asteroids',
@@ -170,7 +171,6 @@ S:onCollisionBetween{
         -- play a sound
         love.audio.play('assets/audio/asteroid_blowup.wav', 'static', false, .35)
     end,
-    collider = collisions.circleToCircle
 }
 
 S:onCollisionBetween{
@@ -180,7 +180,6 @@ S:onCollisionBetween{
         mine:kill()
         player.timer:during(2, function() player:freeze() end, function() player:unfreeze() end)
     end,
-    collider = collisions.circleToCircle
 }
 
 S:onCollisionBetween{
@@ -192,7 +191,6 @@ S:onCollisionBetween{
         scene.camera:shake(scene.objects.timer, (asteroid.radius/30)^2)
         onPlayerHit(player)
     end,
-    collider = collisions.circleToCircle
 }
 
 S:onCollisionBetween{
@@ -202,7 +200,6 @@ S:onCollisionBetween{
         shot:kill()
         onPlayerHit(player)
     end,
-    collider = collisions.circleToCircle
 }
 
 S:onCollisionBetween{
@@ -213,7 +210,6 @@ S:onCollisionBetween{
         scene:group('enemies'):remove(enemy)
         love.audio.play('assets/audio/asteroid_blowup.wav', 'static', false, .35)
     end,
-    collider = collisions.circleToCircle
 }
 
 S:onCollisionBetween{
@@ -223,7 +219,6 @@ S:onCollisionBetween{
         pickup:onCollected(player)
         scene:group('pickups'):remove(pickup)
     end,
-    collider = collisions.circleToCircle,
 }
 
 -- S:addEffect(shine.glowsimple{sigma=2})
