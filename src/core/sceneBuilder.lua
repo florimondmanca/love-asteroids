@@ -77,6 +77,49 @@ function Builder:addUpdateAction(action)
     end)
 end
 
+local _onObjectCollision = function(a, b, resolve, collider)
+    return function(scene)
+        if collider(a, b) then resolve(scene, a, b) end
+    end
+end
+
+local _onObjectGroupCollision = function(object, group, resolve, collider)
+    assert(type(group) == 'string', 'group must be a string')
+    return function(scene)
+        if type(object) == 'string' then object = scene.objects[object] end
+        for _, other in scene:group(group):each() do
+            _onObjectCollision(object, other, resolve, collider)(scene)
+        end
+    end
+end
+
+local _onGroupCollision = function(groupA, groupB, resolve, collider)
+    assert(type(groupA) == 'string', 'groupA must be a string')
+    assert(type(groupB) == 'string', 'groupB must be a string')
+    return function(scene)
+        for _, a in scene:group(groupA):each() do
+            _onObjectGroupCollision(a, groupB, resolve, collider)(scene)
+        end
+    end
+end
+
+
+function Builder:onCollisionBetween(t)
+    assert(type(t.resolve) == 'function', 'resolve must be a function')
+    assert(type(t.collider) == 'function', 'collider must be a function')
+    local action
+    if t.groupA and t.groupB then
+        action = _onGroupCollision(t.groupA, t.groupB, t.resolve, t.collider)
+    elseif t.group and t.object then
+        action = _onObjectGroupCollision(t.object, t.group, t.resolve, t.collider)
+    elseif t.objectA and t.objectB then
+        action = _onObjectCollision(t.objectA, t.objectB, t.resolve, t.collider)
+    else
+        error('Bad onCollision action description: only (groupA, groupB) (group, object) or (objectA, objectB) allowed')
+    end
+    self:addUpdateAction(action)
+end
+
 function Builder:addEffect(effect, name)
     lume.push(self.funcs, function(scene)
         scene:addEffect(effect, name)
