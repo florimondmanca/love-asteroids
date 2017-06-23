@@ -31,6 +31,7 @@ function Asteroid:init(t)
     self.y = t.y
     self.speed = t.speed or Asteroid.speed
     self.radius = t.radius or Asteroid.radius
+    self.dieRadius = t.dieRadius or Asteroid.dieRadius
     self.omega = t.omega or Asteroid.omega
     self.rotation = t.rotation or Asteroid.rotation
     self.quad = lume.randomchoice(asteroidQuads)
@@ -48,8 +49,10 @@ function Asteroid.newRandom(t)
 end
 
 function Asteroid.newRandomAtBorders(t)
-    t = t or {}
-    local a = Asteroid.newRandom{x = 0, y=0, angle=lume.random(2*math.pi), z=t.z}
+    t = lume.merge(t or {}, {
+        x = 0, y = 0, angle = lume.random(2*math.pi)
+    })
+    local a = Asteroid.newRandom(t)
     local r = a.radius
     local tlerp = {
         0, (h + 2*r) / (2*w + 2*h + 8*r),
@@ -61,21 +64,27 @@ function Asteroid.newRandomAtBorders(t)
     return a
 end
 
+function Asteroid:doesSplit()
+    return self.radius/2 >= self.dieRadius
+end
+
 function Asteroid:split(damager)
     local angle = lume.angle(self.x, self.y, damager.x, damager.y)
     local left = Asteroid.newRandom{
         x = self.x, y = self.y,
-        angle = angle + math.pi/2, radius = self.radius/2
+        angle = angle + math.pi/2, radius = self.radius/2,
+        dieRadius = self.dieRadius,
     }
     local right = Asteroid.newRandom{
         x = self.x, y = self.y,
-        angle = angle - math.pi/2, radius = self.radius/2
+        angle = angle - math.pi/2, radius = self.radius/2,
+        dieRadius = self.dieRadius,
     }
     local ps = ParticleSystem.burst{
         shape = 'triangle',
         x = self.x, y = self.y,
-        number = lume.lerp(1, 16, (self.radius/30)^2),
-        size = lume.lerp(.1, 1, self.radius/30),
+        number = math.floor(self.radius/2),
+        size = lume.lerp(.1, 1, self.radius/50),
         lifetime = {.1, 1},
         direction = angle + math.pi,
         spread = math.pi/2,
@@ -86,8 +95,7 @@ function Asteroid:split(damager)
             75, 86, 96, 0
         },
     }
-    -- is the asteroid big enough to split ?
-    if self.radius/2 >= Asteroid.dieRadius then return left, right, ps
+    if self:doesSplit() then return left, right, ps
     else return nil, nil, ps end
 end
 

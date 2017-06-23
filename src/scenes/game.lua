@@ -15,6 +15,32 @@ local function splitAsteroid(self, asteroid, damager)
     self:group('particleSystems'):add(ps)
 end
 
+local function makeRadiusTableWeightedBySizes(minSize, nSplits)
+    local rt = {}
+    for i, g in pairs(nSplits) do
+        rt[function(t)
+            return lume.lerp(minSize * math.pow(2, i-1), minSize * math.pow(2, i), t) - minSize * math.pow(2, i-2)
+        end] = g
+    end
+    return rt
+end
+
+--- quick random builder of asteroids
+-- number: number of asteroids
+-- minSize : threshold size of the asteroids below which they don't split anymore
+-- nSplits : a table {numberOfSplits = weight} that gives the repartition of
+-- asteroids by their number of splits
+local function buildAsteroids(number, minSize, nSplits)
+    local asteroids = {}
+    local rt = makeRadiusTableWeightedBySizes(minSize, nSplits)
+    for _ = 1, number do
+        local r = lume.weightedchoice(rt)(lume.random())
+        local a = Asteroid.newRandomAtBorders{radius=r, dieRadius=minSize}
+        lume.push(asteroids, a)
+    end
+    return asteroids
+end
+
 local S = SceneBuilder()
 
 S:addProperty('score', {
@@ -28,6 +54,14 @@ S:addSignalListener('changed_score', function(scene, score)
     scene:group('widgets').objects.scoreLabel:setText(tostring(score))
 end)
 
+S:addGroup('asteroids', {init=function(group)
+    for _, a in ipairs(buildAsteroids(30, 12, {
+        [1] = 1,
+        [2] = 2,
+        [3] = .5,
+    })) do group:add(a) end
+end})
+
 
 S:addGroup('shots_player')
 S:addObjectAs('player', {
@@ -39,21 +73,10 @@ S:addObjectAs('player', {
         shotColor = {200, 255, 120, 255},
     }
 })
--- -- for testing
--- S:addObject{
---     script = 'core.KeyTrigger',
---     arguments = {
---         key='k', action=function() S.scene.objects.player:damage(-1) end
---     }
--- }
 
 S:addGroup('particleSystems')
 
 S:addGroup('pickups', {z=-1})
-
-S:addGroup('asteroids', {init=function(group)
-    for _ = 1, 30 do group:add(Asteroid.newRandomAtBorders()) end
-end})
 
 
 S:addGroup('shots_enemies', {z=-2})
