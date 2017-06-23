@@ -32,7 +32,7 @@ local Builder = class()
 
 function Builder:init()
     self.funcs = {}  -- list of initializing functions <func(scene)>
-    self.scene = GameScene:extend()
+    self.scene = GameScene()
     self.defaultCollider = nil
 end
 

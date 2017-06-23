@@ -184,6 +184,13 @@ function lume.noise(x, sigma)
 end
 
 
+function lume.lengthof(t)
+    local count = 0
+    for _ in pairs(t) do count = count + 1 end
+    return count
+end
+
+
 function lume.isarray(x)
   return (type(x) == "table" and x[1] ~= nil) and true or false
 end
