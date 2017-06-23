@@ -225,11 +225,8 @@ end)
 
 
 
-S:addEffect(
-    shine.glowsimple()
-    -- :chain(shine.pixelate{pixel_size=2, samples=1, add_original=true})
-    :chain(shine.vignette{radius=.9, opacity=.5})
-)
+-- S:addEffect(shine.glowsimple{sigma=2})
+S:addEffect(shine.vignette{radius=.9, opacity=.5})
 
 S:addCallback('enter', function(self)
     love.graphics.setBackgroundColor(20, 25, 35)

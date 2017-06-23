@@ -32,20 +32,20 @@ local function bundle(shots)
 end
 
 local function multipleShooter(n)
-    return function(sc)
+    return function(ship)
         return bundle(lume.map(
-            spread(sc.angle, math.sqrt(n)*math.pi/10, n),
-            function(a) return Shot{x=sc.x, y=sc.y, angle=a, z=sc.z} end
+            spread(ship.angle, math.sqrt(n)*math.pi/10, n),
+            function(a) return Shot{x=ship.x, y=ship.y, angle=a, z=ship.z} end
         ))
     end
 end
 
-function shooters.laser_simple(sc)
-    return bundle{Shot{x=sc.x, y=sc.y, angle=sc.angle, z=sc.z}}
+function shooters.laser_simple(ship)
+    return bundle{Shot{x=ship.x, y=ship.y, angle=ship.angle, z=ship.z}}
 end
 
-function shooters.mine_simple(sc)
-    return bundle{Mine{x=sc.x, y=sc.y, speed=20, angle=sc.angle + math.pi, z=sc.z}}
+function shooters.mine_simple(ship)
+    return bundle{Mine{x=ship.x, y=ship.y, speed=20, angle=ship.angle + math.pi, z=ship.z}}
 end
 
 shooters.laser_triple = multipleShooter(3)

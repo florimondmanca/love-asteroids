@@ -4,7 +4,7 @@ local gamestate = require 'lib.gamestate'
 require 'core.SoundManager'
 require 'sounds'
 
-love.math.setRandomSeed(os.time())
+math.randomseed(os.time())
 
 function love.load()
     gamestate.registerEvents()

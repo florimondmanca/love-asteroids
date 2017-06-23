@@ -19,7 +19,7 @@ function Mine:init(t)
     self.speed = t.speed or 0
     self.angle = t.angle or 0
     self.omega = t.omega or 0
-    self.radius = t.radius or 16
+    self.radius = t.radius or 32
     self.coreRadius = 6
     self.vx = self.speed * math.cos(self.angle)
     self.vy = self.speed * math.sin(self.angle)
