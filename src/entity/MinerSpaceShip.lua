@@ -16,7 +16,7 @@ function MinerSpaceShip:init(t)
     assert(t.angle, 'angle required')
     t.vx = t.speed * math.cos(t.angle)
     t.vy = t.speed * math.sin(t.angle)
-    t.shotGroup = 'shots_enemies'
+    t.shotGroup = 'mines_enemies'
     SpaceShip.init(self, t)
     self.shooter = 'mine_simple'
 end

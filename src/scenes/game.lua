@@ -57,6 +57,7 @@ end})
 
 
 S:addGroup('shots_enemies')
+S:addGroup('mines_enemies')
 S:addGroup('enemies', {
     objects = {
         drifting1 = {
@@ -150,6 +151,20 @@ S:addSignalListener('collision_asteroid_player_shot', function(scene, asteroid, 
     end
     -- play a sound
     love.audio.play('assets/audio/asteroid_blowup.wav', 'static', false, .35)
+end)
+
+
+S:addUpdateAction(function(self)
+    -- check collisions between enemies' mines and player
+    for _, mine in self:each('mines_enemies') do
+        if collisions.circleToCircle(mine, self.objects.player) then
+            Signal.emit('collision_enemymine_player', self, mine, self.objects.player)
+        end
+    end
+end)
+S:addSignalListener('collision_enemymine_player', function(_, mine, player)
+    mine:kill()
+    player.timer:during(2, function() player:freeze() end, function() player:unfreeze() end)
 end)
 
 

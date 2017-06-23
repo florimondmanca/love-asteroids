@@ -23,6 +23,14 @@ function Player:externalActions()
     if love.keyboard.isDown('left') then self:rotateLeft() end
 end
 
+function Player:freeze()
+    self.externalActions = function() end
+end
+
+function Player:unfreeze()
+    self.externalActions = Player.externalActions
+end
+
 local render = Player.render
 function Player:render()
     render(self)
@@ -53,6 +61,7 @@ function Player:damage(amount)
         self:resetPos()
         self.healthBar.quantity = self.healthBar.max
         self.shooter = 'laser_simple'
+        self:unfreeze()
         self.timer:clear()
         return true
     end
