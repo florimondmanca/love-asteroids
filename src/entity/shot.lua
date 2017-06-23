@@ -24,7 +24,7 @@ function Shot:init(t)
     self.vy = self.speed * math.sin(t.angle)
     self.color = t.color or self.color
     self.time = 0
-    self.opacity = 255
+    self.opacity = self.color[4] or 255
     timer:after(.7*self.lifetime, function()
         timer:tween(.3*self.lifetime, self, {opacity = 0}, 'in-exp')
     end)
@@ -40,7 +40,7 @@ function Shot:update(dt)
 end
 
 function Shot:render()
-    love.graphics.setColor(lume.concat(self.color, {self.opacity}))
+    love.graphics.setColor(lume.concat(lume.first(self.color, 3), {self.opacity}))
     love.graphics.circle('fill', self.x, self.y, self.radius, 20)
 end
 

@@ -52,7 +52,7 @@ S:addGroup('particleSystems')
 S:addGroup('pickups', {z=-1})
 
 S:addGroup('asteroids', {init=function(group)
-    for _ = 1, 10 do group:add(Asteroid.newRandomAtBorders()) end
+    for _ = 1, 30 do group:add(Asteroid.newRandomAtBorders()) end
 end})
 
 

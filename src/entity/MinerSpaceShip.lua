@@ -19,13 +19,20 @@ function MinerSpaceShip:init(t)
     t.shotGroup = 'mines_enemies'
     SpaceShip.init(self, t)
     self.shooter = 'mine_simple'
+    self.shootingMean = 4  -- seconds
+    self.shootingSigma = 1
+    self.nextShoot = lume.randomNormal(self.shootingSigma, self.shootingMean)
+    self.time = 0
 end
 
 local update = MinerSpaceShip.update
 function MinerSpaceShip:update(dt)
     update(self, dt)
-    if lume.random() < .01 then
+    self.time = self.time + dt
+    if self.time > self.nextShoot then
         self:shoot()
+        self.time = 0
+        self.nextShoot = lume.randomNormal(self.shootingSigma, self.shootingMean)
     end
 end
 
