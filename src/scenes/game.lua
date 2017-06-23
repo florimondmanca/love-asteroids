@@ -56,8 +56,8 @@ S:addGroup('asteroids', {init=function(group)
 end})
 
 
-S:addGroup('shots_enemies')
-S:addGroup('mines_enemies')
+S:addGroup('shots_enemies', {z=-2})
+S:addGroup('mines_enemies', {z=-2})
 S:addGroup('enemies', {
     objects = {
         drifting1 = {
