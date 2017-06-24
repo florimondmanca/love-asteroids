@@ -15,7 +15,7 @@ local function splitAsteroid(self, asteroid, damager)
     self:group('asteroids'):add(left)
     self:group('asteroids'):add(right)
     self:group('particleSystems'):add(ps)
-    self.objects.asteroid_manager:refill(left and right and 2 or 1)
+    self.objects.asteroid_manager:refill(left and right and 1 or 0)
 end
 
 
@@ -37,8 +37,9 @@ S:addObjectAs('asteroid_manager', {
         frequency = 2,
         init = function(self)
             return self.generate(20, self.minSize, {
-                [1] = 1,
-                [2] = 2
+                [0] = 2,
+                [1] = 2,
+                [2] = 1
             })
         end
     }

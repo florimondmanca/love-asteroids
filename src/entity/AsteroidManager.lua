@@ -8,7 +8,10 @@ local function makeRadiusTableWeightedBySizes(minSize, nSplitsTable)
     local rt = {}
     for i, g in pairs(nSplitsTable) do
         rt[function(t)
-            return lume.lerp(minSize * math.pow(2, i-1), minSize * math.pow(2, i), t) - (i > 0 and minSize * math.pow(2, i-2) or 0)
+            return lume.lerp(
+                minSize * math.pow(2, i),
+                minSize * math.pow(2, i + 1), t
+            )
         end] = g
     end
     return rt
