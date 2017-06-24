@@ -36,7 +36,7 @@ S:addObjectAs('asteroid_manager', {
         group = 'asteroids',
         frequency = 2,
         init = function(self)
-            return self.generate(10, self.minSize, {
+            return self.generate(20, self.minSize, {
                 [1] = 1,
                 [2] = 2
             })

@@ -8,7 +8,7 @@ local Shot = Entity:extend()
 
 Shot:set{
     radius = 3,
-    speed = 350,
+    speed = 450,
     lifetime = .8,
     color = {100, 255, 200}
 }
