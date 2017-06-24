@@ -13,17 +13,13 @@ Asteroids is a game where the player embodies a spaceship that must protect itse
 - Level-based.
 - The player has to destroy all the asteroids to get to the next level (cool animation and/or sfx at the end of a level).
 - Destroying asteroids yields points.
-- Levels are progressively more difficult (e.g. more and faster asteroids).
+- Levels are progressively more difficult (e.g. more, bigger and faster asteroids).
 
 Elements of gameplay that can appear as difficulty grows:
 
-- comet : faster but worth more points - one per level - they come back periodically (but typically once in a typical gametime) - make it golden ? at least shiny.
-- asteroid belt : a concentrated and limited time stream of high speed, small asteroids (meteoroids?) that span through the screen - deadly because of the number of asteroids - signal alert before appearing.
-- enemy spacecrafts that can shoot at the player :
-	- drifting enemies : rotating and translating in steady state - shoot at the player if in their sight
-	- miners : they move around randomly and leave EM mines that freeze the spaceship (not moving, no weapons) for a limited time - fx when that happens
-	- turrets : non-moving, shoot guided missiles at the player
-	- crawlers : intelligent enemies, slowly follow the player's spaceship and shoot at them
+- enemy spacecrafts :
+	- miner : moves around randomly and leaves EM mines that freeze the spaceship (not moving, no weapons) for a limited amount of time - fx when that happens
+	- crawler : follows a procedurally generated path and shoots at the player
 
 ## 2. Time runner
 

@@ -60,25 +60,22 @@ S:addGroup('shots_enemies', {z=-2})
 S:addGroup('mines_enemies', {z=-2})
 S:addGroup('enemies', {
     objects = {
-        drifting1 = {
-            script = 'entity.DriftingSpaceShip',
-            arguments = {
-                x = lume.random(w), y = lume.random(h), scene = S.scene,
-                driftAngle = lume.random(2*math.pi), driftSpeed = 100,
-                omega = 2,
-                shotColor = {255, 200, 120},
-                getAim = function()
-                    return S.scene.objects.player.x,
-                    S.scene.objects.player.y
-                end
-            }
-        },
         miner1 = {
             script = 'entity.MinerSpaceShip',
             arguments = {
                 x = lume.random(w), y = lume.random(h), scene = S.scene,
                 speed = 50, angle = lume.random(2*math.pi),
                 omega = lume.random(-2, 2),
+            }
+        },
+        crawler = {
+            script = 'entity.CrawlerEnemy',
+            arguments = {
+                x = lume.random(w), y = lume.random(h), scene = S.scene,
+                speed = 100, angle = lume.random(2*math.pi),
+                getAim = function()
+                    return S.scene.objects.player.x, S.scene.objects.player.y
+                end,
             }
         }
     }
