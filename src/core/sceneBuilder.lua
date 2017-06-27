@@ -7,9 +7,6 @@ local function buildObject(container, key, objectTable)
     local object
     if objectTable.arguments and objectTable.script then
         local args = objectTable.arguments
-        for k, v in pairs(args) do
-            if type(v) == 'function' then args[k] = v() end
-        end
         object = require(objectTable.script)(args)
         for name, fx in pairs(objectTable.effects or {}) do
             object:addEffect(fx, type(name) == 'string' and name or nil)

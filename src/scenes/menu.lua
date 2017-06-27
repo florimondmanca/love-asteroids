@@ -20,6 +20,7 @@ S:addGroup('asteroids', {init = function(group)
 end})
 
 S:addGroup('widgets', {z = 1, init = function(group)
+    -- play button
     group:addAs('playLabel', require('entity.widgets.Label'){
         x = 100, y = 100, text = 'Play'
     })
@@ -36,6 +37,22 @@ S:addGroup('widgets', {z = 1, init = function(group)
         end,
         onUnhover = function()
             S.scene:group('widgets').objects.playLabel.color = {255, 255, 255}
+        end,
+    })
+    -- quit button
+    group:addAs('quitLabel', require('entity.widgets.Label'){
+        x = 100, y = 150, text = 'Quit'
+    })
+    group:addAs('quitButton', require('entity.widgets.Button'){
+        x = 100, y = 150,
+        w = group.objects.quitLabel.textObject:getWidth(),
+        h = group.objects.quitLabel.textObject:getHeight(),
+        onClick = love.event.quit,
+        onHover = function()
+            S.scene:group('widgets').objects.quitLabel.color = {255, 0, 0}
+        end,
+        onUnhover = function()
+            S.scene:group('widgets').objects.quitLabel.color = {255, 255, 255}
         end,
     })
 end})

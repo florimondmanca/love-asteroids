@@ -28,8 +28,8 @@ function Pool:init(t)
 end
 
 function Pool:add(o)
-    o.z = o.z or 0
     if o then
+        o.z = o.z or 0
         o.z = o.z + self.z
         self.objects[o] = o
     end
