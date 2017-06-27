@@ -1,8 +1,11 @@
 local class = require 'lib.class'
 local lume = require 'lib.lume'
 
-local CALLBACKS = {'update', 'draw', 'mousepressed', 'mousereleased',
-'keypressed', 'keyreleased'}
+local CALLBACKS = {
+    'update', 'draw',
+    'mousepressed', 'mousereleased', 'mousemoved',
+    'keypressed', 'keyreleased'
+}
 
 local function defineCallbacks(t)
     for _, fname in ipairs(CALLBACKS) do
@@ -25,15 +28,17 @@ function Pool:init(t)
 end
 
 function Pool:add(o)
+    o.z = o.z or 0
     if o then
-        if o.z then o.z = o.z + self.z end
+        o.z = o.z + self.z
         self.objects[o] = o
     end
     return o
 end
 
 function Pool:addAs(key, o)
-    if o.z then o.z = o.z + self.z end
+    o.z = o.z or 0
+    o.z = o.z + self.z
     self.objects[key] = o
     return o
 end
@@ -60,6 +65,11 @@ function Pool:each()
     return next, self.objects
 end
 
+function Pool:draw()
+    for _, o in ipairs(lume.sort(lume.dict2array(self.objects), 'z')) do
+        if o.draw then o.draw(o) end
+    end
+end
 function Pool:fxOn()
     require('core.fxSupport').forObject(self)
 end

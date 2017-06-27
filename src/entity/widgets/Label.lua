@@ -22,10 +22,11 @@ function Label:init(t)
     self.prefix = t.prefix or '' -- printed before the variable text
     self.suffix = t.suffix or '' -- printed after the variable text
     self.text = t.text or ''
+    self.color = t.color or {255, 255, 255}
 end
 
 function Label:draw()
-    love.graphics.setColor(255, 255, 255)
+    love.graphics.setColor(self.color)
     love.graphics.draw(self.textObject, self.x, self.y)
 end
 

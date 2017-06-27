@@ -17,7 +17,6 @@ Asteroid:set{
     speed = 100,
     radius = 21,
     omega = 1,
-    rotation = 0,
     dieRadius = 10,
     scorePoints = 100
 }
@@ -33,7 +32,7 @@ function Asteroid:init(t)
     self.radius = t.radius or Asteroid.radius
     self.dieRadius = t.dieRadius or Asteroid.dieRadius
     self.omega = t.omega or Asteroid.omega
-    self.rotation = t.rotation or Asteroid.rotation
+    self.rotation = t.angle
     self.quad = lume.randomchoice(asteroidQuads)
     self.vx = self.speed * math.cos(t.angle)
     self.vy = self.speed * math.sin(t.angle)
@@ -43,14 +42,14 @@ function Asteroid.newRandom(t)
     t = t or {}
     t.radius = lume.noise(t.radius or Asteroid.radius, .2)
     t.speed = lume.noise(t.speed or Asteroid.speed, .5)
-    t.omega = lume.noise(Asteroid.omega, .5)
-    t.rotation = lume.random(0, 2*math.pi)
+    t.omega = lume.noise(t.omega or Asteroid.omega, .5)
+    t.angle = lume.random(0, 2*math.pi)
     return Asteroid(t)
 end
 
 function Asteroid.newRandomAtBorders(t)
     t = lume.merge(t or {}, {
-        x = 0, y = 0, angle = lume.random(2*math.pi)
+        x = 0, y = 0
     })
     local a = Asteroid.newRandom(t)
     local r = a.radius

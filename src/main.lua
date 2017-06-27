@@ -8,5 +8,5 @@ math.randomseed(os.time())
 
 function love.load()
     gamestate.registerEvents()
-    gamestate.switch(require('scenes/splash'):build())
+    gamestate.switch(require('scenes/menu'):build())
 end
