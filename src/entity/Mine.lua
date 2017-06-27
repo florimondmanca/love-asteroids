@@ -32,7 +32,7 @@ function Mine:update(dt)
     self.angle = (self.angle + self.omega * dt) % (2*math.pi)
 end
 
-function Mine:render()
+function Mine:draw()
     love.graphics.setColor({255, 100, 150})
     love.graphics.circle('fill', self.x, self.y, self.coreRadius, 20)
     love.graphics.setColor({200, 70, 120})

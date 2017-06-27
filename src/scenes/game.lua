@@ -209,7 +209,6 @@ S:onCollisionBetween{
     end,
 }
 
--- S:addEffect(shine.glowsimple{sigma=2})
 S:addEffect(shine.vignette{radius=.9, opacity=.5})
 
 S:addCallback('enter', function(self)

@@ -24,7 +24,7 @@ function Label:init(t)
     self.text = t.text or ''
 end
 
-function Label:render()
+function Label:draw()
     love.graphics.setColor(255, 255, 255)
     love.graphics.draw(self.textObject, self.x, self.y)
 end

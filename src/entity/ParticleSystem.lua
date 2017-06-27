@@ -21,7 +21,7 @@ function particleSystem:update(dt)
     end
 end
 
-function particleSystem:render()
+function particleSystem:draw()
     love.graphics.setColor(255, 255, 255)
     love.graphics.draw(self.system, self.getX(), self.getY())
 end

@@ -142,7 +142,7 @@ function SpaceShip:update(dt)
     self.y = lume.loop(self.y, 0, h, self.image:getHeight()/2)
 end
 
-function SpaceShip:render()
+function SpaceShip:draw()
     love.graphics.setColor(255, 255, 255)
     love.graphics.push()
         love.graphics.translate(self.x, self.y)

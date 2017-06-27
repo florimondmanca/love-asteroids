@@ -39,7 +39,7 @@ function Shot:update(dt)
     end
 end
 
-function Shot:render()
+function Shot:draw()
     love.graphics.setColor(lume.concat(lume.first(self.color, 3), {self.opacity}))
     love.graphics.circle('fill', self.x, self.y, self.radius, 20)
 end

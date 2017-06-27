@@ -31,9 +31,9 @@ function Player:unfreeze()
     self.externalActions = Player.externalActions
 end
 
-local render = Player.render
-function Player:render()
-    render(self)
+local draw = Player.draw
+function Player:draw()
+    draw(self)
     love.graphics.push()
     love.graphics.translate(self.x, self.y - (self.radius + 10))
     self.healthBar:draw()

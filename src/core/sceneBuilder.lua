@@ -127,6 +127,7 @@ function Builder:onCollisionBetween(t)
 end
 
 function Builder:addEffect(effect, name)
+    if not self.scene.effects then self.scene:fxOn() end
     lume.push(self.funcs, function(scene)
         scene:addEffect(effect, name)
     end)
