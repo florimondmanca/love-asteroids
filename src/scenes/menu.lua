@@ -1,6 +1,5 @@
-local gamestate = require 'lib.gamestate'
+local gamestate = require 'lib.hump.gamestate'
 local lume = require 'lib.lume'
--- local shine = require 'lib.shine'
 local SceneBuilder = require 'core.SceneBuilder'
 local Asteroid = require 'entity.Asteroid'
 
@@ -22,11 +21,11 @@ end})
 S:addGroup('widgets', {z = 1, init = function(group)
     -- play button
     group:addAs('playLabel', require('entity.widgets.Label'){
-        x = 100, y = 100, text = 'Play'
+        x = w/2, y = h/2, text = 'Play'
     })
     group:addAs('playButton', require('entity.widgets.Button'){
-        x = 100,
-        y = 100,
+        x = w/2,
+        y = h/2,
         w = group.objects.playLabel.textObject:getWidth(),
         h = group.objects.playLabel.textObject:getHeight(),
         onClick = function()
@@ -41,10 +40,10 @@ S:addGroup('widgets', {z = 1, init = function(group)
     })
     -- quit button
     group:addAs('quitLabel', require('entity.widgets.Label'){
-        x = 100, y = 150, text = 'Quit'
+        x = w/2, y = h/2 + 50, text = 'Quit'
     })
     group:addAs('quitButton', require('entity.widgets.Button'){
-        x = 100, y = 150,
+        x = w/2, y = h/2 + 50,
         w = group.objects.quitLabel.textObject:getWidth(),
         h = group.objects.quitLabel.textObject:getHeight(),
         onClick = love.event.quit,
@@ -57,7 +56,7 @@ S:addGroup('widgets', {z = 1, init = function(group)
     })
 end})
 
-S:addCallback('enter', function(self)
+S:addCallback('enter', function()
     love.graphics.setBackgroundColor(20, 25, 35)
 end)
 

@@ -1,6 +1,6 @@
 local class = require 'lib.class'
 local lume = require 'lib.lume'
-local Signal = require 'lib.signal'
+local Signal = require 'lib.hump.signal'
 local GameScene = require 'core.GameScene'
 
 local function buildObject(container, key, objectTable)
@@ -126,12 +126,14 @@ function Builder:onCollisionBetween(t)
     self:addUpdateAction(action)
 end
 
-function Builder:addEffect(effect, name)
-    if not self.scene.effects then self.scene:fxOn() end
-    lume.push(self.funcs, function(scene)
-        scene:addEffect(effect, name)
-    end)
-end
+-- TODO update for moonshine support
+-- function Builder:addEffect(effect, name)
+--     if not self.scene.effects then self.scene:fxOn() end
+--     lume.push(self.funcs, function(scene)
+--         scene:addEffect(effect, name)
+--     end)
+-- end
+function Builder.addEffect() end
 
 function Builder:addCallback(name, func)
     lume.push(self.funcs, function(scene)
@@ -142,8 +144,8 @@ end
 function Builder:build()
     -- create a new scene subclass
     local funcs = self.funcs
-    function self.scene:setup()
-        for _, func in ipairs(funcs) do func(self) end
+    function self.scene.setup(self_)
+        for _, func in ipairs(funcs) do func(self_) end
     end
     return self.scene
 end

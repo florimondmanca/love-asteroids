@@ -26,14 +26,15 @@ function Action:trigger() self:call() self.elapsed = 0 end
 
 
 local Timer = class()
-Timer.tweens = {}
-Timer.tweens['linear'] = easing.linear
-Timer.tweens['in-quad'] = easing.inQuad
-Timer.tweens['out-quad'] = easing.outQuad
-Timer.tweens['in-out-quad'] = easing.inOutQuad
-Timer.tweens['out-in-quad'] = easing.outInQuad
-Timer.tweens['in-exp'] = easing.inExp
-Timer.tweens['out-exp'] = easing.outExp
+Timer.tweens = {
+    ['linear']=easing.linear,
+    ['in-quad'] = easing.inQuad,
+    ['out-quad'] = easing.outQuad,
+    ['in-out-quad']=easing.inOutQuad,
+    ['out-in-quad'] = easing.outInQuad,
+    ['in-exp'] = easing.inExp,
+    ['out-exp'] = easing.outExp
+}
 
 function Timer:init()
     self.actions = {}
@@ -45,10 +46,10 @@ end
 
 --- `func` will be executed after `delay` seconds
 function Timer:after(delay, func)
-    return self:addAction(Action(func, function(self)
-        if self.elapsed > delay then
-            self:trigger()
-            self:finish()
+    return self:addAction(Action(func, function(self_)
+        if self_.elapsed > delay then
+            self_:trigger()
+            self_:finish()
         end
     end))
 end
@@ -59,11 +60,11 @@ end
 function Timer:every(delay, func, count)
     count = count or math.huge
     local step = 1
-    return self:addAction(Action(func, function(self)
-        if step == 1 or self.elapsed > delay then
-            self:trigger()
+    return self:addAction(Action(func, function(self_)
+        if step == 1 or self_.elapsed > delay then
+            self_:trigger()
             step = step + 1
-            if step > count then self:finish() end
+            if step > count then self_:finish() end
         end
     end))
 end
@@ -72,9 +73,9 @@ end
 -- optional `after` function is called after the last `func` execution.
 function Timer:during(delay, func, after)
     after = after or function() end
-    return self:addAction(Action(nil, function(self, dt)
-        if self.elapsed < delay then func(dt, self.elapsed)
-        else after(after) self:finish() end
+    return self:addAction(Action(nil, function(self_, dt)
+        if self_.elapsed < delay then func(dt, self_.elapsed)
+        else after(after) self_:finish() end
     end))
 end
 

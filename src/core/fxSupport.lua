@@ -1,8 +1,10 @@
+-- TODO update for moonshine support
+
 local lume = require 'lib.lume'
 
 local function chainEffects(self)
     if #self.effects > 0 then
-        return lume.reduce(self.effects, function(a, b) return a:chain(b) end)
+        return lume.reduce(self.effects, function(a, b) return a.chain(b) end)
     end
 end
 

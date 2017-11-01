@@ -70,8 +70,10 @@ function Pool:draw()
         if o.draw then o.draw(o) end
     end
 end
-function Pool:fxOn()
-    require('core.fxSupport').forObject(self)
-end
+
+-- TODO update for moonshine support
+-- function Pool:fxOn()
+--     require('core.fxSupport').forObject(self)
+-- end
 
 return Pool

@@ -15,8 +15,9 @@ function Entity:kill()
     end
 end
 
-function Entity:fxOn()
-    require('core.fxSupport').forObject(self)
-end
+-- TODO update for moonshine support
+-- function Entity:fxOn()
+--     require('core.fxSupport').forObject(self)
+-- end
 
 return Entity

@@ -111,9 +111,6 @@ end
 
 function Asteroid:draw()
     love.graphics.setColor(255, 255, 255)
-    -- -- debug circle
-    -- love.graphics.setLineWidth(1)
-    -- love.graphics.circle('line', self.x, self.y, self.radius, 20)
     love.graphics.push()
         local s = self.radius/64
         love.graphics.translate(self.x, self.y)

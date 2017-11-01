@@ -1,5 +1,5 @@
 -- main.lua
-local gamestate = require 'lib.gamestate'
+local gamestate = require 'lib.hump.gamestate'
 
 require 'core.SoundManager'
 require 'sounds'

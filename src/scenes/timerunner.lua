@@ -1,5 +1,5 @@
-local Signal = require 'lib.signal'
-local gamestate = require 'lib.gamestate'
+local Signal = require 'lib.hump.signal'
+local gamestate = require 'lib.hump.gamestate'
 
 local S = require('scenes/game')
 

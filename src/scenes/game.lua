@@ -2,7 +2,7 @@ local lume = require 'lib.lume'
 local Pickup = require 'entity.Pickup'
 local collisions = require 'core.collisions'
 local SceneBuilder = require 'core.SceneBuilder'
-local shine = require 'lib.shine'
+-- local moonshine = require 'lib.moonshine'
 
 local w, h = love.graphics.getDimensions()
 
@@ -209,9 +209,10 @@ S:onCollisionBetween{
     end,
 }
 
-S:addEffect(shine.vignette{radius=.9, opacity=.5})
+-- TODO update for moonshine support
+-- S:addEffect(moonshine.effects.vignette{radius=.9, opacity=.5})
 
-S:addCallback('enter', function(self)
+S:addCallback('enter', function()
     love.graphics.setBackgroundColor(20, 25, 35)
 end)
 
