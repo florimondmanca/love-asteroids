@@ -1,4 +1,5 @@
 local lume = require 'lib.lume'
+local gamestate = require 'lib.hump.gamestate'
 local Pickup = require 'entity.Pickup'
 local collisions = require 'core.collisions'
 local SceneBuilder = require 'core.SceneBuilder'
@@ -97,8 +98,8 @@ S:addGroup('widgets', {
 
 S:addProperty('score', {
     value = 0,
-    get = function(self, value) return value end,
-    set = function(self, new) return new end,
+    get = function(_, value) return value end,
+    set = function(_, new) return new end,
     afterSet = function(self, value)
         self:group('widgets').objects.scoreLabel:setText(tostring(value))
     end
@@ -114,7 +115,7 @@ S:addObject{
 
 S:addUpdateAction(function(scene)
     if lume.lengthof(scene:group('asteroids').objects) == 0 then
-        print('NO MORE ASTEROIDS! WIN!')
+        gamestate.switch(require('scenes/menu'):build())
     end
 end)
 

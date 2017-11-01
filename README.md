@@ -1,10 +1,6 @@
 # Asteroids
 
-Remake of the Asteroid classic retro game with Lua and [Love2D](https://love2d.org).
-
-## Current version
-
--
+Remake of the Asteroid classic retro game with Lua and [Love2D](https://love2d.org), still in development.
 
 ## Installation
 
@@ -17,6 +13,10 @@ Remake of the Asteroid classic retro game with Lua and [Love2D](https://love2d.o
 ## Run the game
 
 Use the `makelove` script to generate a `asteroids.love` executable file and run it.
+
+Enjoy !
+
+![Screenshot](media/screenshot.png)
 
 ## References
 

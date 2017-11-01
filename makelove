@@ -3,7 +3,7 @@
 # edit your LÖVE app file path below
 LOVE="path/to/love"
 
-$filename="asteroids.love"
+filename="asteroids.love"
 echo "Bundling into $filename..."
 cd src
 zip -r ../"$filename" *
