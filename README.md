@@ -14,6 +14,12 @@ Remake of the Asteroid classic retro game with Lua and [Love2D](https://love2d.o
 
 Use the `makelove` script to generate a `asteroids.love` executable file and run it.
 
+```bash
+$ sh makelove
+# or (may require $ chmod +x makelove)
+$ ./makelove
+```
+
 Enjoy !
 
 ![Screenshot](media/screenshot.png)
