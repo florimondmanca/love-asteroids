@@ -1,0 +1,3 @@
+https://github.com/vrld/hump/raw/08937cc/gamestate.lua
+https://github.com/vrld/hump/raw/08937cc/signal.lua
+https://github.com/rxi/lume/raw/98847e7/lume.lua

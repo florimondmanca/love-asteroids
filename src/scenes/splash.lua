@@ -1,4 +1,4 @@
-local gamestate = require 'lib.hump.gamestate'
+local gamestate = require 'lib.gamestate'
 local SceneBuilder = require 'core.SceneBuilder'
 
 local w, h = love.graphics.getDimensions()

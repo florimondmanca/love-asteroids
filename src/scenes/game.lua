@@ -1,5 +1,5 @@
 local lume = require 'lib.lume'
-local gamestate = require 'lib.hump.gamestate'
+local gamestate = require 'lib.gamestate'
 local Pickup = require 'entity.Pickup'
 local collisions = require 'core.collisions'
 local SceneBuilder = require 'core.SceneBuilder'

@@ -1,6 +1,6 @@
-local class = require 'lib.class'
+local class = require 'utils.class'
 local lume = require 'lib.lume'
-local Signal = require 'lib.hump.signal'
+local Signal = require 'lib.signal'
 local GameScene = require 'core.GameScene'
 
 local function buildObject(container, key, objectTable)

@@ -1,7 +1,7 @@
 all: clean build love
 
 install:
-	luarocks --local install luaunit
+	./scripts/deps
 
 build:
 	cd src && zip -r ../app.love * && cd ..

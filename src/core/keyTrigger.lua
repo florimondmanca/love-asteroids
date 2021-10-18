@@ -1,4 +1,4 @@
-local class = require 'lib.class'
+local class = require 'utils.class'
 
 local KeyTrigger = class()
 KeyTrigger:set{

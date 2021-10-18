@@ -1,10 +1,25 @@
 --
 -- lume
 --
--- Copyright (c) 2017 rxi
+-- Copyright (c) 2020 rxi
 --
--- This library is free software; you can redistribute it and/or modify it
--- under the terms of the MIT license. See LICENSE for details.
+-- Permission is hereby granted, free of charge, to any person obtaining a copy of
+-- this software and associated documentation files (the "Software"), to deal in
+-- the Software without restriction, including without limitation the rights to
+-- use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+-- of the Software, and to permit persons to whom the Software is furnished to do
+-- so, subject to the following conditions:
+--
+-- The above copyright notice and this permission notice shall be included in all
+-- copies or substantial portions of the Software.
+--
+-- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+-- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+-- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+-- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+-- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+-- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+-- SOFTWARE.
 --
 
 local lume = { _version = "2.3.0" }
@@ -17,7 +32,6 @@ local math_ceil = math.ceil
 local math_atan2 = math.atan2 or math.atan
 local math_sqrt = math.sqrt
 local math_abs = math.abs
-
 
 local noop = function()
 end
@@ -70,13 +84,6 @@ function lume.clamp(x, min, max)
 end
 
 
-function lume.loop(x, min, max, offset)
-    min = min - (offset or 0)
-    max = max + (offset or 0)
-    return x < min and max - math.abs(min - x) or (x > max and min + math.abs(max - x) or x)
-end
-
-
 function lume.round(x, increment)
   if increment then return lume.round(x / increment) * increment end
   return x >= 0 and math_floor(x + .5) or math_ceil(x - .5)
@@ -90,22 +97,6 @@ end
 
 function lume.lerp(a, b, amount)
   return a + (b - a) * lume.clamp(amount, 0, 1)
-end
-
-
-function lume.bin(t, x)
-    for i = 1, #t - 1 do
-        if t[i] <= x and x < t[i+1] then return i end
-    end
-end
-
-
-function lume.multilerp(t, y, amount)
-    assert(#t == #y, 'multilerp: input and output must have the same length (were' .. #t .. ' and ' .. #y .. ')')
-    local tmin, tmax = math.min(unpack(t)), math.max(unpack(t))
-    amount = lume.clamp(amount, tmin, tmax)
-    local i = lume.bin(t, amount)
-    return lume.lerp(y[i], y[i+1], (amount - t[i])/(t[i+1] - t[i]))
 end
 
 
@@ -129,12 +120,6 @@ function lume.distance(x1, y1, x2, y2, squared)
 end
 
 
-function lume.length(x, y, squared)
-    local s = x^2 + y^2
-    return squared and s or math_sqrt(s)
-end
-
-
 function lume.angle(x1, y1, x2, y2)
   return math_atan2(y2 - y1, x2 - x1)
 end
@@ -149,14 +134,6 @@ function lume.random(a, b)
   if not a then a, b = 0, 1 end
   if not b then b = 0 end
   return a + math.random() * (b - a)
-end
-
-
-function lume.randomNormal(sigma, mu)
-    -- uses Box-Muller transform
-    sigma = sigma or 1
-    mu = mu or 0
-    return mu + sigma * math.sqrt(-2*math.log(lume.random())) * math.cos(2*math.pi * lume.random())
 end
 
 
@@ -179,20 +156,9 @@ function lume.weightedchoice(t)
   end
 end
 
-function lume.noise(x, sigma)
-  return x * lume.randomNormal(sigma, 1)
-end
-
-
-function lume.lengthof(t)
-    local count = 0
-    for _ in pairs(t) do count = count + 1 end
-    return count
-end
-
 
 function lume.isarray(x)
-  return (type(x) == "table" and x[1] ~= nil) and true or false
+  return type(x) == "table" and x[1] ~= nil
 end
 
 
@@ -278,11 +244,6 @@ function lume.array(...)
   return t
 end
 
-function lume.dict2array(d)
-    local t = {}
-    for _, v in pairs(d) do t[#t+1] = v end
-    return t
-end
 
 function lume.each(t, fn, ...)
   local iter = getiter(t)
@@ -325,8 +286,8 @@ end
 
 
 function lume.reduce(t, fn, first)
+  local started = first ~= nil
   local acc = first
-  local started = first and true or false
   local iter = getiter(t)
   for _, v in iter(t) do
     if started then
@@ -341,7 +302,7 @@ function lume.reduce(t, fn, first)
 end
 
 
-function lume.set(t)
+function lume.unique(t)
   local rtn = {}
   for k in pairs(lume.invert(t)) do
     rtn[#rtn + 1] = k
@@ -763,7 +724,9 @@ end
 local ripairs_iter = function(t, i)
   i = i - 1
   local v = t[i]
-  if v then return i, v end
+  if v ~= nil then
+    return i, v
+  end
 end
 
 function lume.ripairs(t)
@@ -790,15 +753,6 @@ function lume.color(str, mul)
     error(("bad color string '%s'"):format(str))
   end
   return r * mul, g * mul, b * mul, a * mul
-end
-
-
-function lume.rgba(color)
-  local a = math_floor((color / 16777216) % 256)
-  local r = math_floor((color /    65536) % 256)
-  local g = math_floor((color /      256) % 256)
-  local b = math_floor((color) % 256)
-  return r, g, b, a
 end
 
 

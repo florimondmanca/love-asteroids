@@ -1,4 +1,4 @@
-local gamestate = require 'lib.hump.gamestate'
+local gamestate = require 'lib.gamestate'
 local lume = require 'lib.lume'
 local SceneBuilder = require 'core.SceneBuilder'
 local Asteroid = require 'entity.Asteroid'

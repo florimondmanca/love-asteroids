@@ -1,0 +1,7 @@
+#!/bin/sh -ex
+
+ROOT=$(pwd)
+
+cd src/lib
+
+wget -i ${ROOT}/deps.txt
