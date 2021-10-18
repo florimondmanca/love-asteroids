@@ -8,9 +8,6 @@ local function buildObject(container, key, objectTable)
     if objectTable.arguments and objectTable.script then
         local args = objectTable.arguments
         object = require(objectTable.script)(args)
-        for name, fx in pairs(objectTable.effects or {}) do
-            object:addEffect(fx, type(name) == 'string' and name or nil)
-        end
     else
         object = objectTable
     end
@@ -125,15 +122,6 @@ function Builder:onCollisionBetween(t)
     end
     self:addUpdateAction(action)
 end
-
--- TODO update for moonshine support
--- function Builder:addEffect(effect, name)
---     if not self.scene.effects then self.scene:fxOn() end
---     lume.push(self.funcs, function(scene)
---         scene:addEffect(effect, name)
---     end)
--- end
-function Builder.addEffect() end
 
 function Builder:addCallback(name, func)
     lume.push(self.funcs, function(scene)

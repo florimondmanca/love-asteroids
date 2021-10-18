@@ -71,9 +71,4 @@ function Pool:draw()
     end
 end
 
--- TODO update for moonshine support
--- function Pool:fxOn()
---     require('core.fxSupport').forObject(self)
--- end
-
 return Pool

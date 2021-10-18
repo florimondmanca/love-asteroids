@@ -209,9 +209,6 @@ S:onCollisionBetween{
     end,
 }
 
--- TODO update for moonshine support
--- S:addEffect(moonshine.effects.vignette{radius=.9, opacity=.5})
-
 S:addCallback('enter', function()
     love.graphics.setBackgroundColor(0.078, 0.098, 0.137)
 end)
