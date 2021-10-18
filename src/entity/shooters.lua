@@ -1,6 +1,6 @@
 local lume = require 'lib.lume'
-local Shot = require 'entity.Shot'
-local Mine = require 'entity.Mine'
+local Shot = require 'entity.shot'
+local Mine = require 'entity.mine'
 
 local shooters = {}
 

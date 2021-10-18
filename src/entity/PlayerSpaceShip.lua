@@ -1,7 +1,7 @@
 local lume = require 'lib.lume'
-local SpaceShip = require 'entity.SpaceShip'
-local QuantityBar = require 'entity.QuantityBar'
-local ParticleSystem = require 'entity.ParticleSystem'
+local SpaceShip = require 'entity.spaceship'
+local QuantityBar = require 'entity.quantitybar'
+local ParticleSystem = require 'entity.particlesystem'
 
 
 local Player = SpaceShip:extend()

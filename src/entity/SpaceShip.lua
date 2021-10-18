@@ -1,6 +1,6 @@
 local lume = require 'lib.lume'
-local Entity = require 'core.Entity'
-local Timer = require 'core.Timer'
+local Entity = require 'core.entity'
+local Timer = require 'core.timer'
 
 local shooters = require 'entity.shooters'
 

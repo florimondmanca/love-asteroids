@@ -1,7 +1,7 @@
 local gamestate = require 'lib.gamestate'
 local lume = require 'lib.lume'
-local SceneBuilder = require 'core.SceneBuilder'
-local Asteroid = require 'entity.Asteroid'
+local SceneBuilder = require 'core.scenebuilder'
+local Asteroid = require 'entity.asteroid'
 
 local w, h = love.graphics.getDimensions()
 

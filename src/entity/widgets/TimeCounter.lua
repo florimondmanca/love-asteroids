@@ -1,4 +1,4 @@
-local Entity = require 'core.Entity'
+local Entity = require 'core.entity'
 
 local TimeCounter = Entity:extend()
 

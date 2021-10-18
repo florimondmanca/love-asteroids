@@ -1,6 +1,6 @@
 local lume = require 'lib.lume'
-local Entity = require 'core.Entity'
-local ParticleSystem = require 'entity.ParticleSystem'
+local Entity = require 'core.entity'
+local ParticleSystem = require 'entity.particlesystem'
 
 local w, h = love.graphics.getDimensions()
 

@@ -1,5 +1,5 @@
 local gamestate = require 'lib.gamestate'
-local SceneBuilder = require 'core.SceneBuilder'
+local SceneBuilder = require 'core.scenebuilder'
 
 local w, h = love.graphics.getDimensions()
 

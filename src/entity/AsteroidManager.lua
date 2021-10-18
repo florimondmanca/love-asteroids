@@ -1,6 +1,6 @@
 local class = require 'utils.class'
 local lume = require 'lib.lume'
-local Asteroid = require 'entity.Asteroid'
+local Asteroid = require 'entity.asteroid'
 
 local AsteroidManager = class()
 

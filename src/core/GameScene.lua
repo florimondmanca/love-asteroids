@@ -1,6 +1,6 @@
 local lume = require 'lib.lume'
-local Camera = require 'core.Camera'
-local Pool = require 'core.Pool'
+local Camera = require 'core.camera'
+local Pool = require 'core.pool'
 
 local GameScene = Pool:extend()
 
@@ -9,7 +9,7 @@ function GameScene:init()
     init(self)
     self.updateActions = {}
     self.camera = Camera()
-    self:addAs('timer', require('core.Timer').global)
+    self:addAs('timer', require('core.timer').global)
     self:setup()
 end
 

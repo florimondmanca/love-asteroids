@@ -6,7 +6,7 @@ An enemy drifting in space (constant linear and angular velocity), shots at the 
 ]]--
 
 local lume = require 'lib.lume'
-local SpaceShip = require 'entity.SpaceShip'
+local SpaceShip = require 'entity.spaceship'
 
 local DriftingSpaceShip = SpaceShip:extend()
 

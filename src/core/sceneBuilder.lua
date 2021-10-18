@@ -1,7 +1,7 @@
 local class = require 'utils.class'
 local lume = require 'lib.lume'
 local Signal = require 'lib.signal'
-local GameScene = require 'core.GameScene'
+local GameScene = require 'core.gamescene'
 
 local function buildObject(container, key, objectTable)
     local object

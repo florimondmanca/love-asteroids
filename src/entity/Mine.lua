@@ -1,5 +1,5 @@
 local lume = require 'lib.lume'
-local Entity = require 'core.Entity'
+local Entity = require 'core.entity'
 
 local w, h = love.graphics.getDimensions()
 

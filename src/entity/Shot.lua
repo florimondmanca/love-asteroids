@@ -1,7 +1,7 @@
 local lume = require 'lib.lume'
-local Entity = require 'core.Entity'
+local Entity = require 'core.entity'
 
-local timer = require('core.Timer').global
+local timer = require('core.timer').global
 local w, h = love.graphics.getDimensions()
 
 local Shot = Entity:extend()

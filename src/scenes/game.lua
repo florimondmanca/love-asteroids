@@ -1,9 +1,8 @@
 local lume = require 'lib.lume'
 local gamestate = require 'lib.gamestate'
-local Pickup = require 'entity.Pickup'
+local Pickup = require 'entity.pickup'
 local collisions = require 'core.collisions'
-local SceneBuilder = require 'core.SceneBuilder'
--- local moonshine = require 'lib.moonshine'
+local SceneBuilder = require 'core.scenebuilder'
 
 local w, h = love.graphics.getDimensions()
 
@@ -30,7 +29,7 @@ local S = SceneBuilder()
 
 S:addGroup('asteroids')
 S:addObjectAs('asteroid_manager', {
-    script = 'entity.AsteroidManager',
+    script = 'entity.asteroidmanager',
     arguments = {
         minSize = 12,
         scene = S.scene,
@@ -47,7 +46,7 @@ S:addObjectAs('asteroid_manager', {
 })
 
 S:addObjectAs('player', {
-    script = 'entity.PlayerSpaceShip',
+    script = 'entity.playerspaceship',
     arguments = {
         x = w/2, y = h/2,
         scene = S.scene,
@@ -63,7 +62,7 @@ S:addGroup('mines_enemies', {z=-2})
 S:addGroup('enemies', {
     objects = {
         miner1 = {
-            script = 'entity.MinerSpaceShip',
+            script = 'entity.minerspaceship',
             arguments = {
                 x = lume.random(w), y = lume.random(h), scene = S.scene,
                 speed = 50, angle = lume.random(2*math.pi),
@@ -71,7 +70,7 @@ S:addGroup('enemies', {
             }
         },
         crawler = {
-            script = 'entity.CrawlerEnemy',
+            script = 'entity.crawlerenemy',
             arguments = {
                 x = lume.random(w), y = lume.random(h), scene = S.scene,
                 speed = 100, angle = lume.random(2*math.pi),
@@ -106,7 +105,7 @@ S:addProperty('score', {
 })
 
 S:addObject{
-    script = 'core.KeyTrigger',
+    script = 'core.keytrigger',
     arguments = {key = 'space', action = function()
         love.audio.play('assets/audio/shot' .. lume.randomchoice{1, 2, 3} .. '.wav', 'static', false, .5)
         S.scene.objects.player:shoot()

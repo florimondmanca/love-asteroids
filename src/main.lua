@@ -3,7 +3,7 @@ require 'extensions'
 
 local gamestate = require 'lib.gamestate'
 
-require 'core.SoundManager'
+require 'core.soundmanager'
 require 'sounds'
 
 math.randomseed(os.time())
