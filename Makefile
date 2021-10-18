@@ -1,4 +1,4 @@
-all: clean build love
+all: clean build run
 
 install:
 	./scripts/deps
@@ -6,11 +6,8 @@ install:
 build:
 	cd src && zip -r ../app.love * && cd ..
 
-love:
+run:
 	love app.love
-
-test:
-	lua tests/main.lua
 
 clean:
 	rm -f app.love
