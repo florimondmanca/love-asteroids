@@ -11,7 +11,7 @@ S:addObjectAs('logo', {
     scale = 1,
     image = love.graphics.newImage('assets/img/logo.png'),
     draw = function(self)
-        love.graphics.setColor(255, 255, 255)
+        love.graphics.setColor(1, 1, 1)
         love.graphics.push()
         love.graphics.translate(
             self.x - self.image:getWidth()/2 * self.scale,
@@ -24,7 +24,7 @@ S:addObjectAs('logo', {
 
 S:addCallback('enter', function(self)
     love.audio.play('assets/audio/asteroids-ost.mp3', 'stream', true, .6)
-    love.graphics.setBackgroundColor(20, 25, 35)
+    love.graphics.setBackgroundColor(0.078, 0.098, 0.137)
     self.objects.timer:script(function(wait)
         self.objects.logo.x = -500
         self.objects.timer:tween(1, self.objects.logo, {x=w/2}, 'out-exp')

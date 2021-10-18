@@ -57,7 +57,7 @@ S:addGroup('widgets', {z = 1, init = function(group)
 end})
 
 S:addCallback('enter', function()
-    love.graphics.setBackgroundColor(20, 25, 35)
+    love.graphics.setBackgroundColor(0.078, 0.098, 0.137)
 end)
 
 return S

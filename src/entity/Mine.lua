@@ -33,9 +33,9 @@ function Mine:update(dt)
 end
 
 function Mine:draw()
-    love.graphics.setColor({255, 100, 150})
+    love.graphics.setColor({1, 0.4, 0.58})
     love.graphics.circle('fill', self.x, self.y, self.coreRadius, 20)
-    love.graphics.setColor({200, 70, 120})
+    love.graphics.setColor({0.78, 0.27, 0.47})
     love.graphics.setLineWidth(1)
     love.graphics.circle('line', self.x, self.y, self.radius, 20)
 end

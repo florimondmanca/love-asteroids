@@ -143,7 +143,7 @@ function SpaceShip:update(dt)
 end
 
 function SpaceShip:draw()
-    love.graphics.setColor(255, 255, 255)
+    love.graphics.setColor(1, 1, 1)
     love.graphics.push()
         love.graphics.translate(self.x, self.y)
         love.graphics.push()

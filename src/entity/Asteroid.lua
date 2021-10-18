@@ -110,7 +110,7 @@ function Asteroid:update(dt)
 end
 
 function Asteroid:draw()
-    love.graphics.setColor(255, 255, 255)
+    love.graphics.setColor(1, 1, 1)
     love.graphics.push()
         local s = self.radius/64
         love.graphics.translate(self.x, self.y)

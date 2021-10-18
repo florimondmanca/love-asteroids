@@ -18,9 +18,9 @@ end
 function QuantityBar:draw()
     local xmin, xmax = -self.w/2, self.w/2
     local xq = lume.lerp(xmin, xmax, self.quantity / (self.max - self.min))
-    love.graphics.setColor(150, 150, 150)
+    love.graphics.setColor(0.58, 0.58, 0.58)
     love.graphics.rectangle('fill', xmin, 0, self.w, 5)
-    love.graphics.setColor(100, 255, 200)
+    love.graphics.setColor(0.39, 1, 0.78)
     love.graphics.rectangle('fill', xmin, 0, xq - xmin, 5)
 end
 
